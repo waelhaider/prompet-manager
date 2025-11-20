@@ -6,6 +6,7 @@ import { BoardTabs } from "@/components/BoardTabs";
 import { NoteCard } from "@/components/NoteCard";
 import { BoardManagement } from "@/components/BoardManagement";
 import { ReorderDialog } from "@/components/ReorderDialog";
+import { TranslateDialog } from "@/components/TranslateDialog";
 import { useToast } from "@/hooks/use-toast";
 import { Save } from "lucide-react";
 import {
@@ -48,10 +49,12 @@ const Index = () => {
   const [editBoardOpen, setEditBoardOpen] = useState(false);
   const [deleteBoardOpen, setDeleteBoardOpen] = useState(false);
   const [moveNoteOpen, setMoveNoteOpen] = useState(false);
+  const [translateOpen, setTranslateOpen] = useState(false);
   const [newBoardName, setNewBoardName] = useState("");
   const [boardToDelete, setBoardToDelete] = useState("");
   const [targetBoard, setTargetBoard] = useState("");
   const [noteToMove, setNoteToMove] = useState<Note | null>(null);
+  const [noteToTranslate, setNoteToTranslate] = useState<Note | null>(null);
 
   const { toast } = useToast();
 
@@ -144,6 +147,11 @@ const Index = () => {
         description: `تم نقل الملاحظة إلى ${targetBoard}`,
       });
     }
+  };
+
+  const translateNote = (note: Note) => {
+    setNoteToTranslate(note);
+    setTranslateOpen(true);
   };
 
   const addBoard = () => {
@@ -285,6 +293,7 @@ const Index = () => {
                 onEdit={() => editNote(note)}
                 onDelete={() => deleteNote(note.id)}
                 onMove={() => moveNote(note)}
+                onTranslate={() => translateNote(note)}
               />
             ))
           )}
@@ -376,6 +385,12 @@ const Index = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <TranslateDialog
+        open={translateOpen}
+        onOpenChange={setTranslateOpen}
+        originalText={noteToTranslate?.content || ""}
+      />
     </div>
   );
 };

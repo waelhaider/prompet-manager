@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Copy, Edit2, Trash2, ArrowRight } from "lucide-react";
+import { MoreVertical, Copy, Edit2, Trash2, ArrowRight, Languages } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -22,6 +22,7 @@ interface NoteCardProps {
   onDelete: () => void;
   onMove: () => void;
   onCopy: () => void;
+  onTranslate: () => void;
 }
 
 export const NoteCard = ({
@@ -32,6 +33,7 @@ export const NoteCard = ({
   onDelete,
   onMove,
   onCopy,
+  onTranslate,
 }: NoteCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -93,6 +95,10 @@ export const NoteCard = ({
           <DropdownMenuItem onClick={onEdit}>
             <Edit2 className="mr-2 h-4 w-4" />
             تحرير
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onTranslate}>
+            <Languages className="mr-2 h-4 w-4" />
+            ترجمة
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onMove}>
             <ArrowRight className="mr-2 h-4 w-4" />
