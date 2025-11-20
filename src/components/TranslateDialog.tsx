@@ -49,16 +49,49 @@ export const TranslateDialog = ({
   const translateText = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-          originalText
-        )}&langpair=ar|${targetLang}`
-      );
-      const data = await response.json();
-      setTranslatedText(data.responseData.translatedText);
+      // تقسيم النص إلى أجزاء أصغر من 500 حرف
+      const chunkSize = 400; // نستخدم 400 لنكون في الجانب الآمن
+      const chunks: string[] = [];
+      
+      if (originalText.length <= chunkSize) {
+        chunks.push(originalText);
+      } else {
+        // تقسيم النص عند الأسطر أو المسافات
+        const sentences = originalText.split(/\n/);
+        let currentChunk = "";
+        
+        for (const sentence of sentences) {
+          if ((currentChunk + sentence).length <= chunkSize) {
+            currentChunk += (currentChunk ? "\n" : "") + sentence;
+          } else {
+            if (currentChunk) chunks.push(currentChunk);
+            currentChunk = sentence;
+          }
+        }
+        if (currentChunk) chunks.push(currentChunk);
+      }
+
+      // ترجمة كل جزء
+      const translatedChunks: string[] = [];
+      for (const chunk of chunks) {
+        const response = await fetch(
+          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+            chunk
+          )}&langpair=ar|${targetLang}`
+        );
+        const data = await response.json();
+        
+        if (data.responseStatus === "403") {
+          throw new Error("النص طويل جداً للترجمة");
+        }
+        
+        translatedChunks.push(data.responseData.translatedText);
+      }
+      
+      setTranslatedText(translatedChunks.join("\n"));
     } catch (error) {
       console.error("Translation error:", error);
-      setTranslatedText("حدث خطأ في الترجمة");
+      setTranslatedText("حدث خطأ في الترجمة. النص قد يكون طويلاً جداً.");
     } finally {
       setIsLoading(false);
     }
@@ -90,23 +123,23 @@ export const TranslateDialog = ({
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <Label className="mb-2 block">النص الأصلي</Label>
-              <Card className="p-4 min-h-[200px] bg-muted">
-                <p className="whitespace-pre-wrap text-foreground">{originalText}</p>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label className="text-base font-semibold">النص الأصلي</Label>
+              <Card className="p-4 min-h-[300px] max-h-[500px] overflow-y-auto bg-muted border-2">
+                <p className="whitespace-pre-wrap text-foreground leading-relaxed">{originalText}</p>
               </Card>
             </div>
 
-            <div>
-              <Label className="mb-2 block">الترجمة</Label>
-              <Card className="p-4 min-h-[200px] bg-muted">
+            <div className="space-y-2">
+              <Label className="text-base font-semibold">الترجمة</Label>
+              <Card className="p-4 min-h-[300px] max-h-[500px] overflow-y-auto bg-muted border-2">
                 {isLoading ? (
                   <div className="flex items-center justify-center h-full">
                     <Loader2 className="h-6 w-6 animate-spin text-primary" />
                   </div>
                 ) : (
-                  <p className="whitespace-pre-wrap text-foreground">{translatedText}</p>
+                  <p className="whitespace-pre-wrap text-foreground leading-relaxed">{translatedText}</p>
                 )}
               </Card>
             </div>
