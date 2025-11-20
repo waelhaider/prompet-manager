@@ -49,49 +49,91 @@ export const TranslateDialog = ({
   const translateText = async () => {
     setIsLoading(true);
     try {
-      // تقسيم النص إلى أجزاء أصغر من 500 حرف
-      const chunkSize = 400; // نستخدم 400 لنكون في الجانب الآمن
+      const chunkSize = 400;
       const chunks: string[] = [];
       
+      // تقسيم النص بذكاء
       if (originalText.length <= chunkSize) {
         chunks.push(originalText);
       } else {
-        // تقسيم النص عند الأسطر أو المسافات
-        const sentences = originalText.split(/\n/);
-        let currentChunk = "";
+        let remaining = originalText;
         
-        for (const sentence of sentences) {
-          if ((currentChunk + sentence).length <= chunkSize) {
-            currentChunk += (currentChunk ? "\n" : "") + sentence;
-          } else {
-            if (currentChunk) chunks.push(currentChunk);
-            currentChunk = sentence;
+        while (remaining.length > 0) {
+          if (remaining.length <= chunkSize) {
+            chunks.push(remaining);
+            break;
           }
+          
+          // محاولة القطع عند نهاية جملة أو سطر
+          let cutPoint = chunkSize;
+          const substring = remaining.substring(0, chunkSize);
+          
+          // البحث عن آخر نقطة، سطر جديد، أو مسافة
+          const lastNewline = substring.lastIndexOf('\n');
+          const lastPeriod = substring.lastIndexOf('.');
+          const lastSpace = substring.lastIndexOf(' ');
+          
+          cutPoint = Math.max(lastNewline, lastPeriod, lastSpace);
+          
+          // إذا لم نجد أي نقطة قطع مناسبة، نقطع عند الحد الأقصى
+          if (cutPoint <= 0 || cutPoint < chunkSize / 2) {
+            cutPoint = chunkSize;
+          }
+          
+          chunks.push(remaining.substring(0, cutPoint).trim());
+          remaining = remaining.substring(cutPoint).trim();
         }
-        if (currentChunk) chunks.push(currentChunk);
       }
 
-      // ترجمة كل جزء
+      // ترجمة كل جزء مع انتظار قصير بين الطلبات
       const translatedChunks: string[] = [];
-      for (const chunk of chunks) {
+      for (let i = 0; i < chunks.length; i++) {
+        if (i > 0) {
+          // انتظار 500ms بين الطلبات لتجنب الحظر
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
         const response = await fetch(
           `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-            chunk
+            chunks[i]
           )}&langpair=ar|${targetLang}`
         );
         const data = await response.json();
         
-        if (data.responseStatus === "403") {
-          throw new Error("النص طويل جداً للترجمة");
+        if (data.responseStatus === "403" || data.responseData.translatedText.includes("QUERY LENGTH LIMIT")) {
+          // إذا فشل، حاول تقسيم هذا الجزء إلى نصفين
+          const halfSize = Math.floor(chunks[i].length / 2);
+          const firstHalf = chunks[i].substring(0, halfSize);
+          const secondHalf = chunks[i].substring(halfSize);
+          
+          // ترجمة النصف الأول
+          const response1 = await fetch(
+            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+              firstHalf
+            )}&langpair=ar|${targetLang}`
+          );
+          const data1 = await response1.json();
+          translatedChunks.push(data1.responseData.translatedText);
+          
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // ترجمة النصف الثاني
+          const response2 = await fetch(
+            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+              secondHalf
+            )}&langpair=ar|${targetLang}`
+          );
+          const data2 = await response2.json();
+          translatedChunks.push(data2.responseData.translatedText);
+        } else {
+          translatedChunks.push(data.responseData.translatedText);
         }
-        
-        translatedChunks.push(data.responseData.translatedText);
       }
       
-      setTranslatedText(translatedChunks.join("\n"));
+      setTranslatedText(translatedChunks.join(" "));
     } catch (error) {
       console.error("Translation error:", error);
-      setTranslatedText("حدث خطأ في الترجمة. النص قد يكون طويلاً جداً.");
+      setTranslatedText("حدث خطأ في الترجمة. يرجى المحاولة مرة أخرى.");
     } finally {
       setIsLoading(false);
     }
