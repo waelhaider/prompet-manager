@@ -223,7 +223,7 @@ const Index = () => {
           </div>
         </div>
 
-        <BoardManagement onAddBoard={() => setAddBoardOpen(true)} onEditBoard={() => setEditBoardOpen(true)} onDeleteBoard={() => setDeleteBoardOpen(true)} onReorderBoards={() => setReorderOpen(true)} />
+        <BoardManagement onAddBoard={() => setAddBoardOpen(true)} onEditBoard={() => setEditBoardOpen(true)} onDeleteBoard={() => setDeleteBoardOpen(true)} onReorderBoards={() => setReorderOpen(true)} className="rounded-md" />
 
         <div className="space-y-3">
           {filteredNotes.length === 0 ? <div className="text-center py-12 text-muted-foreground">
