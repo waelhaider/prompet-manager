@@ -6,9 +6,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { Loader2, Copy } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface TranslateDialogProps {
   open: boolean;
@@ -36,22 +38,34 @@ export const TranslateDialog = ({
   onOpenChange,
   originalText,
 }: TranslateDialogProps) => {
+  const [sourceLang, setSourceLang] = useState("ar");
   const [targetLang, setTargetLang] = useState("en");
+  const [sourceText, setSourceText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (open && originalText) {
-      translateText();
+      setSourceText(originalText);
+      translateText(originalText);
     }
-  }, [open, targetLang, originalText]);
+  }, [open, originalText]);
 
-  const translateText = async () => {
+  useEffect(() => {
+    if (open && sourceText && (sourceLang !== targetLang)) {
+      translateText(sourceText);
+    }
+  }, [sourceLang, targetLang]);
+
+  const translateText = async (textToTranslate: string) => {
+    if (!textToTranslate || sourceLang === targetLang) {
+      setTranslatedText(textToTranslate);
+      return;
+    }
     setIsLoading(true);
     try {
-      // استخدام Google Translate API غير الرسمي
       const response = await fetch(
-        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(originalText)}`
+        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(textToTranslate)}`
       );
       
       if (!response.ok) {
@@ -75,52 +89,103 @@ export const TranslateDialog = ({
     }
   };
 
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`تم نسخ ${label}`);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>ترجمة النص</DialogTitle>
+          <DialogTitle className="text-lg">ترجمة النص</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4 mt-4">
-          <div className="flex justify-center">
-            <div className="w-64">
-              <Label>اللغة المستهدفة</Label>
-              <Select value={targetLang} onValueChange={setTargetLang}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {LANGUAGES.map((lang) => (
-                    <SelectItem key={lang.code} value={lang.code}>
-                      {lang.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        <div className="space-y-3 mt-2">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Label className="text-sm font-semibold">اللغة الأصلية</Label>
+                <Select value={sourceLang} onValueChange={setSourceLang}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANGUAGES.map((lang) => (
+                      <SelectItem key={lang.code} value={lang.code}>
+                        {lang.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Textarea
+                value={sourceText}
+                onChange={(e) => setSourceText(e.target.value)}
+                className="min-h-[200px] max-h-[300px] text-sm resize-none"
+                placeholder="اكتب النص هنا..."
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full h-8"
+                onClick={() => copyToClipboard(sourceText, "النص الأصلي")}
+              >
+                <Copy className="h-3 w-3 mr-1" />
+                نسخ الأصلي
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Label className="text-sm font-semibold">اللغة المترجمة</Label>
+                <Select value={targetLang} onValueChange={setTargetLang}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANGUAGES.map((lang) => (
+                      <SelectItem key={lang.code} value={lang.code}>
+                        {lang.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {isLoading ? (
+                <div className="flex items-center justify-center min-h-[200px] border rounded-md bg-muted">
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                </div>
+              ) : (
+                <Textarea
+                  value={translatedText}
+                  onChange={(e) => setTranslatedText(e.target.value)}
+                  className="min-h-[200px] max-h-[300px] text-sm resize-none"
+                  placeholder="الترجمة ستظهر هنا..."
+                />
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full h-8"
+                onClick={() => copyToClipboard(translatedText, "الترجمة")}
+                disabled={!translatedText}
+              >
+                <Copy className="h-3 w-3 mr-1" />
+                نسخ الترجمة
+              </Button>
             </div>
           </div>
-
-          <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label className="text-base font-semibold">النص الأصلي</Label>
-              <Card className="p-4 min-h-[300px] max-h-[500px] overflow-y-auto bg-muted border-2">
-                <p className="whitespace-pre-wrap text-foreground leading-relaxed">{originalText}</p>
-              </Card>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-base font-semibold">الترجمة</Label>
-              <Card className="p-4 min-h-[300px] max-h-[500px] overflow-y-auto bg-muted border-2">
-                {isLoading ? (
-                  <div className="flex items-center justify-center h-full">
-                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  </div>
-                ) : (
-                  <p className="whitespace-pre-wrap text-foreground leading-relaxed">{translatedText}</p>
-                )}
-              </Card>
-            </div>
+          
+          <div className="flex justify-center pt-2">
+            <Button
+              size="sm"
+              className="h-8"
+              onClick={() => translateText(sourceText)}
+              disabled={isLoading || !sourceText || sourceLang === targetLang}
+            >
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "ترجم"}
+            </Button>
           </div>
         </div>
       </DialogContent>
