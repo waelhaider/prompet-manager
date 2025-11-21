@@ -127,6 +127,59 @@ const Index = () => {
     setNoteToTranslate(note);
     setTranslateOpen(true);
   };
+
+  const exportData = () => {
+    const data = {
+      boards,
+      notes,
+      exportDate: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `notes-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast({
+      title: "تم التصدير",
+      description: "تم تصدير البيانات بنجاح"
+    });
+  };
+
+  const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = JSON.parse(content);
+        
+        if (data.boards && data.notes) {
+          setBoards(data.boards);
+          setNotes(data.notes);
+          setActiveBoard(data.boards[0]);
+          toast({
+            title: "تم الاستيراد",
+            description: "تم استيراد البيانات بنجاح"
+          });
+        } else {
+          throw new Error("Invalid file format");
+        }
+      } catch (error) {
+        toast({
+          title: "خطأ",
+          description: "فشل استيراد البيانات. تأكد من صحة الملف.",
+          variant: "destructive"
+        });
+      }
+    };
+    reader.readAsText(file);
+  };
   const addBoard = () => {
     if (!newBoardName.trim()) {
       toast({
@@ -223,7 +276,15 @@ const Index = () => {
           </div>
         </div>
 
-        <BoardManagement onAddBoard={() => setAddBoardOpen(true)} onEditBoard={() => setEditBoardOpen(true)} onDeleteBoard={() => setDeleteBoardOpen(true)} onReorderBoards={() => setReorderOpen(true)} className="rounded-md" />
+        <BoardManagement 
+          onAddBoard={() => setAddBoardOpen(true)} 
+          onEditBoard={() => setEditBoardOpen(true)} 
+          onDeleteBoard={() => setDeleteBoardOpen(true)} 
+          onReorderBoards={() => setReorderOpen(true)}
+          onExport={exportData}
+          onImport={importData}
+          className="rounded-md" 
+        />
 
         <div className="space-y-3">
           {filteredNotes.length === 0 ? <div className="text-center py-12 text-muted-foreground">
