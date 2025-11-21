@@ -142,6 +142,7 @@ const Index = () => {
     const data = {
       boards,
       notes,
+      deletedBoards,
       exportDate: new Date().toISOString()
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -149,9 +150,7 @@ const Index = () => {
     const a = document.createElement('a');
     a.href = url;
     a.download = `notes-backup-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast({
       title: "تم التصدير",
@@ -172,6 +171,9 @@ const Index = () => {
         if (data.boards && data.notes) {
           setBoards(data.boards);
           setNotes(data.notes);
+          if (data.deletedBoards) {
+            setDeletedBoards(data.deletedBoards);
+          }
           setActiveBoard(data.boards[0]);
           toast({
             title: "تم الاستيراد",
@@ -189,6 +191,7 @@ const Index = () => {
       }
     };
     reader.readAsText(file);
+    event.target.value = '';
   };
   const addBoard = () => {
     if (!newBoardName.trim()) {
