@@ -45,7 +45,7 @@ export const NoteCard = ({
   return (
     <Card
       className={cn(
-        "relative p-4 cursor-pointer transition-all duration-200",
+        "relative p-3 cursor-pointer transition-all duration-200",
         "hover:bg-note-hover hover:shadow-md",
         isSelected && "bg-note-selected ring-2 ring-primary"
       )}
@@ -78,34 +78,34 @@ export const NoteCard = ({
           <Button
             variant="ghost"
             size="icon"
-            className="absolute bottom-2 left-2 h-8 w-8 transition-opacity"
+            className="absolute bottom-1.5 left-1.5 h-7 w-7 transition-opacity"
           >
-            <MoreVertical className="h-4 w-4" />
+            <MoreVertical className="h-3.5 w-3.5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
-          className="w-48 bg-popover shadow-lg z-50"
+          className="w-40 bg-popover shadow-lg z-50"
           onClick={(e) => e.stopPropagation()}
         >
-          <DropdownMenuItem onClick={onCopy}>
-            <Copy className="mr-2 h-4 w-4" />
+          <DropdownMenuItem onClick={onCopy} className="text-xs">
+            <Copy className="mr-2 h-3.5 w-3.5" />
             نسخ
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onEdit}>
-            <Edit2 className="mr-2 h-4 w-4" />
+          <DropdownMenuItem onClick={onEdit} className="text-xs">
+            <Edit2 className="mr-2 h-3.5 w-3.5" />
             تحرير
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onTranslate}>
-            <Languages className="mr-2 h-4 w-4" />
+          <DropdownMenuItem onClick={onTranslate} className="text-xs">
+            <Languages className="mr-2 h-3.5 w-3.5" />
             ترجمة
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onMove}>
-            <ArrowRight className="mr-2 h-4 w-4" />
+          <DropdownMenuItem onClick={onMove} className="text-xs">
+            <ArrowRight className="mr-2 h-3.5 w-3.5" />
             نقل إلى
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onDelete} className="text-destructive">
-            <Trash2 className="mr-2 h-4 w-4" />
+          <DropdownMenuItem onClick={onDelete} className="text-destructive text-xs">
+            <Trash2 className="mr-2 h-3.5 w-3.5" />
             حذف
           </DropdownMenuItem>
         </DropdownMenuContent>

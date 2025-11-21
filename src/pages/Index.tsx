@@ -21,6 +21,10 @@ const Index = () => {
     const saved = localStorage.getItem("boards");
     return saved ? JSON.parse(saved) : ["الرئيسية"];
   });
+  const [deletedBoards, setDeletedBoards] = useState<{board: string, notes: Note[]}[]>(() => {
+    const saved = localStorage.getItem("deletedBoards");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [activeBoard, setActiveBoard] = useState<string>(boards[0]);
   const [noteContent, setNoteContent] = useState("");
   const [notes, setNotes] = useState<Note[]>(() => {
@@ -29,15 +33,18 @@ const Index = () => {
   });
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [reorderOpen, setReorderOpen] = useState(false);
   const [addBoardOpen, setAddBoardOpen] = useState(false);
   const [editBoardOpen, setEditBoardOpen] = useState(false);
   const [deleteBoardOpen, setDeleteBoardOpen] = useState(false);
+  const [restoreOpen, setRestoreOpen] = useState(false);
   const [moveNoteOpen, setMoveNoteOpen] = useState(false);
   const [translateOpen, setTranslateOpen] = useState(false);
   const [newBoardName, setNewBoardName] = useState("");
   const [boardToDelete, setBoardToDelete] = useState("");
   const [targetBoard, setTargetBoard] = useState("");
+  const [boardToRestore, setBoardToRestore] = useState("");
   const [noteToMove, setNoteToMove] = useState<Note | null>(null);
   const [noteToTranslate, setNoteToTranslate] = useState<Note | null>(null);
   const {
@@ -49,6 +56,9 @@ const Index = () => {
   useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
   }, [notes]);
+  useEffect(() => {
+    localStorage.setItem("deletedBoards", JSON.stringify(deletedBoards));
+  }, [deletedBoards]);
   const saveNote = () => {
     if (!noteContent.trim()) {
       toast({
@@ -244,6 +254,8 @@ const Index = () => {
       });
       return;
     }
+    const boardNotes = notes.filter(n => n.board === activeBoard);
+    setDeletedBoards([...deletedBoards, { board: activeBoard, notes: boardNotes }]);
     setBoards(boards.filter(b => b !== activeBoard));
     setNotes(notes.filter(n => n.board !== activeBoard));
     setActiveBoard(boards[0] === activeBoard ? boards[1] : boards[0]);
@@ -251,40 +263,63 @@ const Index = () => {
     setDeleteBoardOpen(false);
     toast({
       title: "تم الحذف",
-      description: "تم حذف اللوحة وجميع ملاحظاتها"
+      description: "تم نقل اللوحة إلى المحذوفات"
+    });
+  };
+
+  const restoreBoard = () => {
+    if (!boardToRestore) {
+      toast({
+        title: "خطأ",
+        description: "الرجاء اختيار لوحة للاستعادة",
+        variant: "destructive"
+      });
+      return;
+    }
+    const deletedItem = deletedBoards.find(d => d.board === boardToRestore);
+    if (!deletedItem) return;
+    
+    if (!targetBoard) {
+      toast({
+        title: "خطأ",
+        description: "الرجاء اختيار اللوحة الهدف",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const restoredNotes = deletedItem.notes.map(n => ({ ...n, board: targetBoard }));
+    setNotes([...notes, ...restoredNotes]);
+    setDeletedBoards(deletedBoards.filter(d => d.board !== boardToRestore));
+    setBoardToRestore("");
+    setTargetBoard("");
+    setRestoreOpen(false);
+    toast({
+      title: "تمت الاستعادة",
+      description: `تم استعادة ملاحظات ${deletedItem.board} إلى ${targetBoard}`
     });
   };
   const filteredNotes = notes.filter(n => n.board === activeBoard);
   return <div className="min-h-screen bg-background" dir="rtl">
-      <BoardTabs boards={boards} activeBoard={activeBoard} onBoardChange={setActiveBoard} />
+      <BoardTabs boards={boards} activeBoard={activeBoard} onBoardChange={setActiveBoard} onMenuOpen={() => setMenuOpen(true)} />
 
-      <div className="container max-w-4xl mx-auto p-6 space-y-6">
-        <div className="space-y-4 rounded-md">
-          <Textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." className="min-h-[120px] text-lg resize-none" />
+      <div className="container max-w-4xl mx-auto p-4 space-y-4">
+        <div className="space-y-3 rounded-md">
+          <Textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={3} className="text-base resize-none" />
           
           <div className="flex gap-2">
-            <Button onClick={saveNote} className="gap-2">
-              <Save className="h-4 w-4" />
-              {editingNote ? "تحديث" : "حفظ النص"}
+            <Button onClick={saveNote} size="sm" className="gap-1.5">
+              <Save className="h-3.5 w-3.5" />
+              {editingNote ? "تحديث" : "حفظ"}
             </Button>
             {editingNote && <Button onClick={() => {
             setEditingNote(null);
             setNoteContent("");
-          }} variant="outline">
-                إلغاء التحرير
+          }} variant="outline" size="sm">
+                إلغاء
               </Button>}
           </div>
         </div>
-
-        <BoardManagement 
-          onAddBoard={() => setAddBoardOpen(true)} 
-          onEditBoard={() => setEditBoardOpen(true)} 
-          onDeleteBoard={() => setDeleteBoardOpen(true)} 
-          onReorderBoards={() => setReorderOpen(true)}
-          onExport={exportData}
-          onImport={importData}
-          className="rounded-md" 
-        />
 
         <div className="space-y-3">
           {filteredNotes.length === 0 ? <div className="text-center py-12 text-muted-foreground">
@@ -358,6 +393,61 @@ const Index = () => {
       </Dialog>
 
       <TranslateDialog open={translateOpen} onOpenChange={setTranslateOpen} originalText={noteToTranslate?.content || ""} />
+
+      <BoardManagement 
+        open={menuOpen}
+        onOpenChange={setMenuOpen}
+        onAddBoard={() => setAddBoardOpen(true)} 
+        onEditBoard={() => setEditBoardOpen(true)} 
+        onDeleteBoard={() => setDeleteBoardOpen(true)} 
+        onReorderBoards={() => setReorderOpen(true)}
+        onRestoreBoards={() => setRestoreOpen(true)}
+        onExport={exportData}
+        onImport={importData}
+      />
+
+      <Dialog open={restoreOpen} onOpenChange={setRestoreOpen}>
+        <DialogContent className="bg-popover">
+          <DialogHeader>
+            <DialogTitle>استعادة لوحة محذوفة</DialogTitle>
+          </DialogHeader>
+          {deletedBoards.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              لا توجد لوحات محذوفة
+            </p>
+          ) : (
+            <>
+              <Select value={boardToRestore} onValueChange={setBoardToRestore}>
+                <SelectTrigger>
+                  <SelectValue placeholder="اختر اللوحة المحذوفة" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover">
+                  {deletedBoards.map(d => (
+                    <SelectItem key={d.board} value={d.board}>
+                      {d.board} ({d.notes.length} ملاحظات)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={targetBoard} onValueChange={setTargetBoard}>
+                <SelectTrigger>
+                  <SelectValue placeholder="استعادة إلى اللوحة" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover">
+                  {boards.map(board => (
+                    <SelectItem key={board} value={board}>
+                      {board}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <DialogFooter>
+                <Button onClick={restoreBoard} size="sm">استعادة</Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>;
 };
 export default Index;
