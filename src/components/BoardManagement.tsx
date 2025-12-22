@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Plus, Edit, Trash2, ArrowUpDown, Download, Upload, RotateCcw, FileDown, FileUp, ChevronDown, LayoutGrid } from "lucide-react";
+import { Plus, Edit, Trash2, ArrowUpDown, Download, Upload, RotateCcw, FileDown, FileUp, ChevronDown, LayoutGrid, Type, Minus } from "lucide-react";
 import { useRef, useState } from "react";
 
 interface BoardManagementProps {
@@ -16,6 +16,9 @@ interface BoardManagementProps {
   onImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onExportBoard: () => void;
   onImportBoard: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  fontSize: number;
+  onIncreaseFontSize: () => void;
+  onDecreaseFontSize: () => void;
 }
 
 export const BoardManagement = ({
@@ -30,6 +33,9 @@ export const BoardManagement = ({
   onImport,
   onExportBoard,
   onImportBoard,
+  fontSize,
+  onIncreaseFontSize,
+  onDecreaseFontSize,
 }: BoardManagementProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const boardFileInputRef = useRef<HTMLInputElement>(null);
@@ -82,6 +88,35 @@ export const BoardManagement = ({
             <RotateCcw className="h-4 w-4" />
             المحذوفات
           </Button>
+          
+          {/* Font Size Control */}
+          <div className="flex items-center justify-between px-2 py-1">
+            <span className="flex items-center gap-2 text-sm">
+              <Type className="h-4 w-4" />
+              حجم النصوص
+            </span>
+            <div className="flex items-center gap-1">
+              <Button 
+                onClick={onDecreaseFontSize} 
+                variant="outline" 
+                size="icon" 
+                className="h-6 w-6"
+                disabled={fontSize <= 10}
+              >
+                <Minus className="h-3 w-3" />
+              </Button>
+              <span className="text-xs w-6 text-center">{fontSize}</span>
+              <Button 
+                onClick={onIncreaseFontSize} 
+                variant="outline" 
+                size="icon" 
+                className="h-6 w-6"
+                disabled={fontSize >= 24}
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
           
           <div className="border-t border-border my-2" />
           
