@@ -12,6 +12,7 @@ import { Save, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 interface Note {
   id: string;
   content: string;
@@ -52,6 +53,10 @@ const Index = () => {
   const [noteToTranslate, setNoteToTranslate] = useState<Note | null>(null);
   const [confirmDeleteNoteId, setConfirmDeleteNoteId] = useState<string | null>(null);
   const [confirmDeleteBoardName, setConfirmDeleteBoardName] = useState<string | null>(null);
+  const [fontSize, setFontSize] = useState<number>(() => {
+    const saved = localStorage.getItem("fontSize");
+    return saved ? parseInt(saved) : 14;
+  });
   const {
     toast
   } = useToast();
@@ -67,6 +72,17 @@ const Index = () => {
   useEffect(() => {
     localStorage.setItem("deletedNotes", JSON.stringify(deletedNotes));
   }, [deletedNotes]);
+  useEffect(() => {
+    localStorage.setItem("fontSize", fontSize.toString());
+  }, [fontSize]);
+
+  const increaseFontSize = () => {
+    setFontSize(prev => Math.min(prev + 1, 24));
+  };
+
+  const decreaseFontSize = () => {
+    setFontSize(prev => Math.max(prev - 1, 10));
+  };
   const saveNote = () => {
     if (!noteContent.trim()) {
       toast({
@@ -477,7 +493,7 @@ const Index = () => {
 
       <div className="container max-w-4xl mx-auto p-4 space-y-4">
         <div className="space-y-3 rounded-md">
-          <Textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={3} className="text-base resize-none" />
+          <Textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={3} className="resize-none" style={{ fontSize: `${fontSize}px` }} />
           
           <div className="flex gap-2">
             <Button onClick={saveNote} size="sm" className="gap-1.5">
@@ -496,7 +512,7 @@ const Index = () => {
         <div className="space-y-3">
           {filteredNotes.length === 0 ? <div className="text-center py-12 text-muted-foreground">
               لا توجد ملاحظات في هذه اللوحة
-            </div> : filteredNotes.map(note => <NoteCard key={note.id} note={note} boards={boards} isSelected={selectedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)} onTranslate={() => translateNote(note)} />)}
+            </div> : filteredNotes.map(note => <NoteCard key={note.id} note={note} boards={boards} isSelected={selectedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)} onTranslate={() => translateNote(note)} fontSize={fontSize} />)}
         </div>
       </div>
 
@@ -552,6 +568,7 @@ const Index = () => {
             setNotes(notes.map(n => n.id === noteToTranslate.id ? { ...n, content: newText } : n));
           }
         }}
+        fontSize={fontSize}
       />
 
       <BoardManagement 
@@ -566,6 +583,9 @@ const Index = () => {
         onImport={importData}
         onExportBoard={exportBoard}
         onImportBoard={importBoard}
+        fontSize={fontSize}
+        onIncreaseFontSize={increaseFontSize}
+        onDecreaseFontSize={decreaseFontSize}
       />
 
       <Dialog open={restoreOpen} onOpenChange={setRestoreOpen}>

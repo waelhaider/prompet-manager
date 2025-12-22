@@ -17,6 +17,7 @@ interface TranslateDialogProps {
   onOpenChange: (open: boolean) => void;
   originalText: string;
   onSaveTranslation?: (newText: string) => void;
+  fontSize?: number;
 }
 
 const RTL_LANGUAGES = ["ar", "he", "fa", "ur"];
@@ -47,6 +48,7 @@ export const TranslateDialog = ({
   onOpenChange,
   originalText,
   onSaveTranslation,
+  fontSize = 14,
 }: TranslateDialogProps) => {
   const [sourceLang, setSourceLang] = useState("auto");
   const [targetLang, setTargetLang] = useState("en");
@@ -219,7 +221,8 @@ export const TranslateDialog = ({
               <Textarea
                 value={translatedText}
                 onChange={(e) => setTranslatedText(e.target.value)}
-                className="min-h-[180px] max-h-[250px] text-sm resize-none"
+                className="min-h-[180px] max-h-[250px] resize-none"
+                style={{ fontSize: `${fontSize}px` }}
                 placeholder="الترجمة ستظهر هنا..."
                 dir={isRTL(targetLang) ? "rtl" : "ltr"}
               />
@@ -229,7 +232,8 @@ export const TranslateDialog = ({
             <Textarea
               value={sourceText}
               onChange={(e) => setSourceText(e.target.value)}
-              className="min-h-[180px] max-h-[250px] text-sm resize-none"
+              className="min-h-[180px] max-h-[250px] resize-none"
+              style={{ fontSize: `${fontSize}px` }}
               placeholder="اكتب النص هنا..."
               dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
             />

@@ -28,6 +28,7 @@ interface NoteCardProps {
   onMoveTo: (targetBoard: string) => void;
   onCopy: () => void;
   onTranslate: () => void;
+  fontSize?: number;
 }
 
 export const NoteCard = ({
@@ -40,6 +41,7 @@ export const NoteCard = ({
   onMoveTo,
   onCopy,
   onTranslate,
+  fontSize = 14,
 }: NoteCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -64,13 +66,13 @@ export const NoteCard = ({
     >
       <div className="pr-8">
         {isExpanded ? (
-          <p className="whitespace-pre-wrap text-foreground leading-relaxed">
+          <p className="whitespace-pre-wrap text-foreground leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
             {note.content}
           </p>
         ) : (
           <>
             {previewLines.map((line, idx) => (
-              <p key={idx} className="text-foreground leading-relaxed break-words whitespace-pre-wrap">
+              <p key={idx} className="text-foreground leading-relaxed break-words whitespace-pre-wrap" style={{ fontSize: `${fontSize}px` }}>
                 {line || '\u00A0'}
               </p>
             ))}
