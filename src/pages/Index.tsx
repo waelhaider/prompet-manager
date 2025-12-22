@@ -549,7 +549,9 @@ const Index = () => {
     const latinCount = (text.match(latinPattern) || []).length;
     return arabicCount >= latinCount ? 'rtl' : 'ltr';
   };
-  const filteredNotes = notes.filter(n => n.board === activeBoard);
+  const filteredNotes = notes
+    .filter(n => n.board === activeBoard)
+    .sort((a, b) => parseInt(b.id) - parseInt(a.id)); // Sort from newest to oldest
   
   // Show loading state while data is being loaded from IndexedDB
   if (isLoading) {
