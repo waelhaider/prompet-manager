@@ -18,12 +18,12 @@ export const BoardTabs = ({ boards, activeBoard, onBoardChange, onMenuOpen }: Bo
           onClick={onMenuOpen}
           variant="ghost" 
           size="sm" 
-          className="absolute left-2 top-2 z-20"
+          className="absolute right-2 top-2 z-20"
         >
           <Menu className="h-4 w-4" />
         </Button>
         <ScrollArea className="w-full">
-          <div className="flex gap-2 p-2 pr-12" dir="rtl">
+          <div className="flex gap-2 p-2 pl-12" dir="rtl">
             {boards.map((board) => (
               <Button
                 key={board}
