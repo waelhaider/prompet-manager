@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { BoardManagement } from "@/components/BoardManagement";
 import { ReorderDialog } from "@/components/ReorderDialog";
 import { TranslateDialog } from "@/components/TranslateDialog";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Trash2 } from "lucide-react";
+import { Save, Trash2, ImagePlus, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -17,6 +17,7 @@ interface Note {
   id: string;
   content: string;
   board: string;
+  images?: string[];
 }
 const Index = () => {
   const [boards, setBoards] = useState<string[]>(() => {
@@ -53,6 +54,9 @@ const Index = () => {
   const [noteToTranslate, setNoteToTranslate] = useState<Note | null>(null);
   const [confirmDeleteNoteId, setConfirmDeleteNoteId] = useState<string | null>(null);
   const [confirmDeleteBoardName, setConfirmDeleteBoardName] = useState<string | null>(null);
+  const [pendingImages, setPendingImages] = useState<string[]>([]);
+  const [viewingImage, setViewingImage] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const [fontSize, setFontSize] = useState<number>(() => {
     const saved = localStorage.getItem("fontSize");
     return saved ? parseInt(saved) : 14;
@@ -83,11 +87,43 @@ const Index = () => {
   const decreaseFontSize = () => {
     setFontSize(prev => Math.max(prev - 1, 10));
   };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          // Resize to 25% of original dimensions
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width * 0.25;
+          canvas.height = img.height * 0.25;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const resizedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+            setPendingImages(prev => [...prev, resizedBase64]);
+          }
+        };
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+    event.target.value = '';
+  };
+
+  const removePendingImage = (index: number) => {
+    setPendingImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   const saveNote = () => {
-    if (!noteContent.trim()) {
+    if (!noteContent.trim() && pendingImages.length === 0) {
       toast({
         title: "تنبيه",
-        description: "الرجاء كتابة نص للحفظ",
+        description: "الرجاء كتابة نص أو إضافة صورة للحفظ",
         variant: "destructive"
       });
       return;
@@ -95,7 +131,8 @@ const Index = () => {
     if (editingNote) {
       setNotes(notes.map(n => n.id === editingNote.id ? {
         ...n,
-        content: noteContent
+        content: noteContent,
+        images: pendingImages.length > 0 ? pendingImages : n.images
       } : n));
       setEditingNote(null);
       toast({
@@ -106,7 +143,8 @@ const Index = () => {
       const newNote: Note = {
         id: Date.now().toString(),
         content: noteContent,
-        board: activeBoard
+        board: activeBoard,
+        images: pendingImages.length > 0 ? pendingImages : undefined
       };
       setNotes([newNote, ...notes]);
       toast({
@@ -115,6 +153,7 @@ const Index = () => {
       });
     }
     setNoteContent("");
+    setPendingImages([]);
   };
   const copyNote = (note: Note) => {
     navigator.clipboard.writeText(note.content);
@@ -173,6 +212,7 @@ const Index = () => {
   const editNote = (note: Note) => {
     setEditingNote(note);
     setNoteContent(note.content);
+    setPendingImages(note.images || []);
     toast({
       title: "وضع التحرير",
       description: "يمكنك الآن تعديل الملاحظة"
@@ -495,14 +535,51 @@ const Index = () => {
         <div className="space-y-3 rounded-md">
           <Textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={3} className="resize-none" style={{ fontSize: `${fontSize}px` }} />
           
+          {/* Pending Images Preview */}
+          {pendingImages.length > 0 && (
+            <div className="flex flex-wrap gap-2 p-2 bg-muted rounded-md">
+              {pendingImages.map((img, index) => (
+                <div key={index} className="relative">
+                  <img 
+                    src={img} 
+                    alt={`صورة ${index + 1}`} 
+                    className="h-16 w-auto rounded border cursor-pointer"
+                    onClick={() => setViewingImage(img)}
+                  />
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full"
+                    onClick={() => removePendingImage(index)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+          
           <div className="flex gap-2">
             <Button onClick={saveNote} size="sm" className="gap-1.5">
               <Save className="h-3.5 w-3.5" />
               {editingNote ? "تحديث" : "حفظ"}
             </Button>
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+            <Button onClick={() => imageInputRef.current?.click()} variant="outline" size="sm" className="gap-1.5">
+              <ImagePlus className="h-3.5 w-3.5" />
+              تحميل صورة
+            </Button>
             {editingNote && <Button onClick={() => {
             setEditingNote(null);
             setNoteContent("");
+            setPendingImages([]);
           }} variant="outline" size="sm">
                 إلغاء
               </Button>}
@@ -512,7 +589,7 @@ const Index = () => {
         <div className="space-y-3">
           {filteredNotes.length === 0 ? <div className="text-center py-12 text-muted-foreground">
               لا توجد ملاحظات في هذه اللوحة
-            </div> : filteredNotes.map(note => <NoteCard key={note.id} note={note} boards={boards} isSelected={selectedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)} onTranslate={() => translateNote(note)} fontSize={fontSize} />)}
+            </div> : filteredNotes.map(note => <NoteCard key={note.id} note={note} boards={boards} isSelected={selectedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)} onTranslate={() => translateNote(note)} fontSize={fontSize} onImageClick={setViewingImage} />)}
         </div>
       </div>
 
@@ -703,6 +780,19 @@ const Index = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Image Viewer Dialog */}
+      <Dialog open={!!viewingImage} onOpenChange={(open) => !open && setViewingImage(null)}>
+        <DialogContent className="max-w-[90vw] max-h-[90vh] p-2">
+          {viewingImage && (
+            <img 
+              src={viewingImage} 
+              alt="صورة مكبرة" 
+              className="w-full h-auto max-h-[85vh] object-contain"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>;
 };
 export default Index;
