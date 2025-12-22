@@ -25,6 +25,10 @@ const Index = () => {
     const saved = localStorage.getItem("deletedBoards");
     return saved ? JSON.parse(saved) : [];
   });
+  const [deletedNotes, setDeletedNotes] = useState<Note[]>(() => {
+    const saved = localStorage.getItem("deletedNotes");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [activeBoard, setActiveBoard] = useState<string>(boards[0]);
   const [noteContent, setNoteContent] = useState("");
   const [notes, setNotes] = useState<Note[]>(() => {
@@ -59,6 +63,9 @@ const Index = () => {
   useEffect(() => {
     localStorage.setItem("deletedBoards", JSON.stringify(deletedBoards));
   }, [deletedBoards]);
+  useEffect(() => {
+    localStorage.setItem("deletedNotes", JSON.stringify(deletedNotes));
+  }, [deletedNotes]);
   const saveNote = () => {
     if (!noteContent.trim()) {
       toast({
@@ -100,11 +107,32 @@ const Index = () => {
     });
   };
   const deleteNote = (id: string) => {
+    const noteToDelete = notes.find(n => n.id === id);
+    if (noteToDelete) {
+      const newDeletedNotes = [...deletedNotes, noteToDelete];
+      setDeletedNotes(newDeletedNotes);
+      localStorage.setItem("deletedNotes", JSON.stringify(newDeletedNotes));
+    }
     setNotes(notes.filter(n => n.id !== id));
     toast({
       title: "تم الحذف",
-      description: "تم حذف الملاحظة"
+      description: "تم نقل الملاحظة إلى المحذوفات"
     });
+  };
+
+  const restoreNote = (noteId: string) => {
+    const noteToRestore = deletedNotes.find(n => n.id === noteId);
+    if (noteToRestore) {
+      // Check if the original board still exists
+      const targetBoardName = boards.includes(noteToRestore.board) ? noteToRestore.board : boards[0];
+      const restoredNote = { ...noteToRestore, board: targetBoardName };
+      setNotes([restoredNote, ...notes]);
+      setDeletedNotes(deletedNotes.filter(n => n.id !== noteId));
+      toast({
+        title: "تمت الاستعادة",
+        description: `تم استعادة الملاحظة إلى ${targetBoardName}`
+      });
+    }
   };
   const editNote = (note: Note) => {
     setEditingNote(note);
@@ -143,6 +171,7 @@ const Index = () => {
       boards,
       notes,
       deletedBoards,
+      deletedNotes,
       exportDate: new Date().toISOString()
     };
     const jsonString = JSON.stringify(data, null, 2);
@@ -199,6 +228,9 @@ const Index = () => {
           setNotes(data.notes);
           if (data.deletedBoards) {
             setDeletedBoards(data.deletedBoards);
+          }
+          if (data.deletedNotes) {
+            setDeletedNotes(data.deletedNotes);
           }
           setActiveBoard(data.boards[0]);
           toast({
@@ -440,45 +472,73 @@ const Index = () => {
       />
 
       <Dialog open={restoreOpen} onOpenChange={setRestoreOpen}>
-        <DialogContent className="bg-popover">
+        <DialogContent className="bg-popover max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>استعادة لوحة محذوفة</DialogTitle>
+            <DialogTitle>المحذوفات</DialogTitle>
           </DialogHeader>
-          {deletedBoards.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              لا توجد لوحات محذوفة
-            </p>
-          ) : (
-            <>
-              <Select value={boardToRestore} onValueChange={setBoardToRestore}>
-                <SelectTrigger>
-                  <SelectValue placeholder="اختر اللوحة المحذوفة" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover">
-                  {deletedBoards.map(d => (
-                    <SelectItem key={d.board} value={d.board}>
-                      {d.board} ({d.notes.length} ملاحظات)
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={targetBoard} onValueChange={setTargetBoard}>
-                <SelectTrigger>
-                  <SelectValue placeholder="استعادة إلى اللوحة" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover">
-                  {boards.map(board => (
-                    <SelectItem key={board} value={board}>
-                      {board}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <DialogFooter>
-                <Button onClick={restoreBoard} size="sm">استعادة</Button>
-              </DialogFooter>
-            </>
-          )}
+          
+          {/* Deleted Notes Section */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium">الملاحظات المحذوفة ({deletedNotes.length})</h3>
+            {deletedNotes.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-2">
+                لا توجد ملاحظات محذوفة
+              </p>
+            ) : (
+              <div className="max-h-32 overflow-y-auto space-y-1">
+                {deletedNotes.map(note => (
+                  <div key={note.id} className="flex items-center justify-between p-2 bg-muted rounded text-xs">
+                    <span className="truncate flex-1 ml-2">{note.content.substring(0, 50)}...</span>
+                    <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => restoreNote(note.id)}>
+                      استعادة
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="border-t border-border my-2" />
+
+          {/* Deleted Boards Section */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium">اللوحات المحذوفة ({deletedBoards.length})</h3>
+            {deletedBoards.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-2">
+                لا توجد لوحات محذوفة
+              </p>
+            ) : (
+              <>
+                <Select value={boardToRestore} onValueChange={setBoardToRestore}>
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue placeholder="اختر اللوحة المحذوفة" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    {deletedBoards.map(d => (
+                      <SelectItem key={d.board} value={d.board}>
+                        {d.board} ({d.notes.length} ملاحظات)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={targetBoard} onValueChange={setTargetBoard}>
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue placeholder="استعادة إلى اللوحة" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    {boards.map(board => (
+                      <SelectItem key={board} value={board}>
+                        {board}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <DialogFooter>
+                  <Button onClick={restoreBoard} size="sm">استعادة اللوحة</Button>
+                </DialogFooter>
+              </>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>;
