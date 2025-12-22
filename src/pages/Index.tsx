@@ -44,13 +44,11 @@ const Index = () => {
   const [editBoardOpen, setEditBoardOpen] = useState(false);
   const [deleteBoardOpen, setDeleteBoardOpen] = useState(false);
   const [restoreOpen, setRestoreOpen] = useState(false);
-  const [moveNoteOpen, setMoveNoteOpen] = useState(false);
   const [translateOpen, setTranslateOpen] = useState(false);
   const [newBoardName, setNewBoardName] = useState("");
   const [boardToDelete, setBoardToDelete] = useState("");
   const [targetBoard, setTargetBoard] = useState("");
   const [boardToRestore, setBoardToRestore] = useState("");
-  const [noteToMove, setNoteToMove] = useState<Note | null>(null);
   const [noteToTranslate, setNoteToTranslate] = useState<Note | null>(null);
   const [confirmDeleteNoteId, setConfirmDeleteNoteId] = useState<string | null>(null);
   const [confirmDeleteBoardName, setConfirmDeleteBoardName] = useState<string | null>(null);
@@ -164,24 +162,15 @@ const Index = () => {
       description: "يمكنك الآن تعديل الملاحظة"
     });
   };
-  const moveNote = (note: Note) => {
-    setNoteToMove(note);
-    setMoveNoteOpen(true);
-  };
-  const confirmMoveNote = () => {
-    if (noteToMove && targetBoard) {
-      setNotes(notes.map(n => n.id === noteToMove.id ? {
-        ...n,
-        board: targetBoard
-      } : n));
-      setMoveNoteOpen(false);
-      setNoteToMove(null);
-      setTargetBoard("");
-      toast({
-        title: "تم النقل",
-        description: `تم نقل الملاحظة إلى ${targetBoard}`
-      });
-    }
+  const moveNoteToBoard = (note: Note, targetBoardName: string) => {
+    setNotes(notes.map(n => n.id === note.id ? {
+      ...n,
+      board: targetBoardName
+    } : n));
+    toast({
+      title: "تم النقل",
+      description: `تم نقل الملاحظة إلى ${targetBoardName}`
+    });
   };
   const translateNote = (note: Note) => {
     setNoteToTranslate(note);
@@ -411,7 +400,7 @@ const Index = () => {
         <div className="space-y-3">
           {filteredNotes.length === 0 ? <div className="text-center py-12 text-muted-foreground">
               لا توجد ملاحظات في هذه اللوحة
-            </div> : filteredNotes.map(note => <NoteCard key={note.id} note={note} isSelected={selectedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMove={() => moveNote(note)} onTranslate={() => translateNote(note)} />)}
+            </div> : filteredNotes.map(note => <NoteCard key={note.id} note={note} boards={boards} isSelected={selectedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)} onTranslate={() => translateNote(note)} />)}
         </div>
       </div>
 
@@ -454,27 +443,6 @@ const Index = () => {
             <Button onClick={deleteBoard} variant="destructive">
               حذف
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={moveNoteOpen} onOpenChange={setMoveNoteOpen}>
-        <DialogContent className="bg-popover">
-          <DialogHeader>
-            <DialogTitle>نقل الملاحظة</DialogTitle>
-          </DialogHeader>
-          <Select value={targetBoard} onValueChange={setTargetBoard}>
-            <SelectTrigger>
-              <SelectValue placeholder="اختر اللوحة" />
-            </SelectTrigger>
-            <SelectContent className="bg-popover">
-              {boards.filter(b => b !== activeBoard).map(board => <SelectItem key={board} value={board}>
-                  {board}
-                </SelectItem>)}
-            </SelectContent>
-          </Select>
-          <DialogFooter>
-            <Button onClick={confirmMoveNote}>نقل</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
