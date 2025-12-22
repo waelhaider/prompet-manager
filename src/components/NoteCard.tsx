@@ -62,7 +62,7 @@ export const NoteCard = ({
         ) : (
           <>
             {previewLines.map((line, idx) => (
-              <p key={idx} className="text-foreground leading-relaxed truncate">
+              <p key={idx} className="text-foreground leading-relaxed break-words whitespace-pre-wrap">
                 {line || '\u00A0'}
               </p>
             ))}
