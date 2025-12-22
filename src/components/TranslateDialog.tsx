@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Loader2, Copy } from "lucide-react";
+import { Loader2, Copy, ArrowLeftRight } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -94,6 +94,15 @@ export const TranslateDialog = ({
     toast.success(`تم نسخ ${label}`);
   };
 
+  const swapTexts = () => {
+    const tempText = sourceText;
+    const tempLang = sourceLang;
+    setSourceText(translatedText);
+    setSourceLang(targetLang);
+    setTranslatedText(tempText);
+    setTargetLang(tempLang);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
@@ -102,27 +111,26 @@ export const TranslateDialog = ({
         </DialogHeader>
         
         <div className="space-y-3 mt-2">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-start">
+            {/* Source Language Section */}
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Label className="text-sm font-semibold">اللغة الأصلية</Label>
-                <Select value={sourceLang} onValueChange={setSourceLang}>
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LANGUAGES.map((lang) => (
-                      <SelectItem key={lang.code} value={lang.code}>
-                        {lang.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Label className="text-sm font-semibold block">اللغة الأصلية</Label>
+              <Select value={sourceLang} onValueChange={setSourceLang}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {LANGUAGES.map((lang) => (
+                    <SelectItem key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Textarea
                 value={sourceText}
                 onChange={(e) => setSourceText(e.target.value)}
-                className="min-h-[200px] max-h-[300px] text-sm resize-none"
+                className="min-h-[180px] max-h-[250px] text-sm resize-none"
                 placeholder="اكتب النص هنا..."
               />
               <Button
@@ -131,36 +139,48 @@ export const TranslateDialog = ({
                 className="w-full h-8"
                 onClick={() => copyToClipboard(sourceText, "النص الأصلي")}
               >
-                <Copy className="h-3 w-3 mr-1" />
+                <Copy className="h-3 w-3 ml-1" />
                 نسخ الأصلي
               </Button>
             </div>
 
+            {/* Swap Button */}
+            <div className="flex items-center justify-center pt-14">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full"
+                onClick={swapTexts}
+                title="تبديل النصين"
+              >
+                <ArrowLeftRight className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Target Language Section */}
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Label className="text-sm font-semibold">اللغة المترجمة</Label>
-                <Select value={targetLang} onValueChange={setTargetLang}>
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LANGUAGES.map((lang) => (
-                      <SelectItem key={lang.code} value={lang.code}>
-                        {lang.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Label className="text-sm font-semibold block">اللغة المترجمة</Label>
+              <Select value={targetLang} onValueChange={setTargetLang}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {LANGUAGES.map((lang) => (
+                    <SelectItem key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {isLoading ? (
-                <div className="flex items-center justify-center min-h-[200px] border rounded-md bg-muted">
+                <div className="flex items-center justify-center min-h-[180px] border rounded-md bg-muted">
                   <Loader2 className="h-5 w-5 animate-spin text-primary" />
                 </div>
               ) : (
                 <Textarea
                   value={translatedText}
                   onChange={(e) => setTranslatedText(e.target.value)}
-                  className="min-h-[200px] max-h-[300px] text-sm resize-none"
+                  className="min-h-[180px] max-h-[250px] text-sm resize-none"
                   placeholder="الترجمة ستظهر هنا..."
                 />
               )}
@@ -171,7 +191,7 @@ export const TranslateDialog = ({
                 onClick={() => copyToClipboard(translatedText, "الترجمة")}
                 disabled={!translatedText}
               >
-                <Copy className="h-3 w-3 mr-1" />
+                <Copy className="h-3 w-3 ml-1" />
                 نسخ الترجمة
               </Button>
             </div>
