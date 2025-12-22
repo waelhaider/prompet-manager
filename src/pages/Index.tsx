@@ -56,6 +56,7 @@ const Index = () => {
   const [confirmDeleteBoardName, setConfirmDeleteBoardName] = useState<string | null>(null);
   const [pendingImages, setPendingImages] = useState<string[]>([]);
   const [viewingImage, setViewingImage] = useState<string | null>(null);
+  const [highlightedNoteId, setHighlightedNoteId] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [fontSize, setFontSize] = useState<number>(() => {
     const saved = localStorage.getItem("fontSize");
@@ -129,12 +130,17 @@ const Index = () => {
       return;
     }
     if (editingNote) {
+      const editedNoteId = editingNote.id;
       setNotes(notes.map(n => n.id === editingNote.id ? {
         ...n,
         content: noteContent,
         images: pendingImages.length > 0 ? pendingImages : n.images
       } : n));
       setEditingNote(null);
+      setHighlightedNoteId(editedNoteId);
+      setTimeout(() => {
+        setHighlightedNoteId(null);
+      }, 5000);
       toast({
         title: "تم التحديث",
         description: "تم تحديث الملاحظة بنجاح"
@@ -213,6 +219,7 @@ const Index = () => {
     setEditingNote(note);
     setNoteContent(note.content);
     setPendingImages(note.images || []);
+    setHighlightedNoteId(note.id);
     toast({
       title: "وضع التحرير",
       description: "يمكنك الآن تعديل الملاحظة"
@@ -597,7 +604,7 @@ const Index = () => {
         <div className="space-y-3">
           {filteredNotes.length === 0 ? <div className="text-center py-12 text-muted-foreground">
               لا توجد ملاحظات في هذه اللوحة
-            </div> : filteredNotes.map(note => <NoteCard key={note.id} note={note} boards={boards} isSelected={selectedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)} onTranslate={() => translateNote(note)} fontSize={fontSize} onImageClick={setViewingImage} />)}
+            </div> : filteredNotes.map(note => <NoteCard key={note.id} note={note} boards={boards} isSelected={selectedNoteId === note.id || highlightedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)} onTranslate={() => translateNote(note)} fontSize={fontSize} onImageClick={setViewingImage} />)}
         </div>
       </div>
 
