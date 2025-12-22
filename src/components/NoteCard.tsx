@@ -53,12 +53,15 @@ export const NoteCard = ({
   const previewLines = lines.slice(0, 3);
   const hasMore = lines.length > 3 || (note.images && note.images.length > 0);
 
-  // Detect text direction based on first character
-  const isArabic = (text: string) => {
-    const arabicPattern = /[\u0600-\u06FF]/;
-    return arabicPattern.test(text.trim().charAt(0));
+  // Detect text direction based on majority of characters
+  const getTextDirection = (text: string) => {
+    const arabicPattern = /[\u0600-\u06FF]/g;
+    const latinPattern = /[a-zA-Z]/g;
+    const arabicCount = (text.match(arabicPattern) || []).length;
+    const latinCount = (text.match(latinPattern) || []).length;
+    return arabicCount >= latinCount ? 'rtl' : 'ltr';
   };
-  const textDirection = isArabic(note.content) ? 'rtl' : 'ltr';
+  const textDirection = getTextDirection(note.content);
 
   const availableBoards = boards.filter(b => b !== note.board);
 
@@ -105,7 +108,7 @@ export const NoteCard = ({
           ) : (
             <>
               {previewLines.map((line, idx) => {
-                const lineDirection = isArabic(line) ? 'rtl' : 'ltr';
+                const lineDirection = getTextDirection(line);
                 return (
                   <p key={idx} className="text-foreground leading-relaxed break-words whitespace-pre-wrap line-clamp-1" style={{ fontSize: `${fontSize}px`, direction: lineDirection, textAlign: lineDirection === 'rtl' ? 'right' : 'left' }}>
                     {line || '\u00A0'}
