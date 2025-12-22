@@ -67,16 +67,16 @@ export const NoteCard = ({
         setIsExpanded(!isExpanded);
       }}
     >
-      <div className="pr-8 flex flex-row-reverse gap-3">
+      <div className="pr-8 flex flex-row-reverse gap-2">
         {/* Images on the right */}
         {note.images && note.images.length > 0 && (
-          <div className="flex-shrink-0 grid grid-cols-2 gap-1 w-24">
+          <div className="flex-shrink-0 grid grid-cols-2 gap-0.5" style={{ width: '88px' }}>
             {(isExpanded ? note.images : note.images.slice(0, 4)).map((img, idx) => (
               <img 
                 key={idx}
                 src={img} 
                 alt={`صورة ${idx + 1}`} 
-                className="w-11 h-11 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
+                className="w-10 h-10 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={(e) => {
                   e.stopPropagation();
                   onImageClick?.(img);
@@ -90,7 +90,7 @@ export const NoteCard = ({
         )}
         
         {/* Text on the left */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 overflow-hidden" style={{ maxHeight: isExpanded ? 'none' : '4.5em' }}>
           {isExpanded ? (
             <p className="whitespace-pre-wrap text-foreground leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
               {note.content}
@@ -98,12 +98,12 @@ export const NoteCard = ({
           ) : (
             <>
               {previewLines.map((line, idx) => (
-                <p key={idx} className="text-foreground leading-relaxed break-words whitespace-pre-wrap" style={{ fontSize: `${fontSize}px` }}>
+                <p key={idx} className="text-foreground leading-relaxed break-words whitespace-pre-wrap line-clamp-1" style={{ fontSize: `${fontSize}px` }}>
                   {line || '\u00A0'}
                 </p>
               ))}
               {hasMore && (
-                <p className="text-muted-foreground text-sm mt-1">...</p>
+                <p className="text-muted-foreground text-sm">...</p>
               )}
             </>
           )}
