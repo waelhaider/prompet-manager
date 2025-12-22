@@ -8,6 +8,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 
 interface NoteCardProps {
@@ -16,22 +20,24 @@ interface NoteCardProps {
     content: string;
     board: string;
   };
+  boards: string[];
   isSelected: boolean;
   onSelect: () => void;
   onEdit: () => void;
   onDelete: () => void;
-  onMove: () => void;
+  onMoveTo: (targetBoard: string) => void;
   onCopy: () => void;
   onTranslate: () => void;
 }
 
 export const NoteCard = ({
   note,
+  boards,
   isSelected,
   onSelect,
   onEdit,
   onDelete,
-  onMove,
+  onMoveTo,
   onCopy,
   onTranslate,
 }: NoteCardProps) => {
@@ -41,6 +47,8 @@ export const NoteCard = ({
   const lines = note.content.split('\n');
   const previewLines = lines.slice(0, 3);
   const hasMore = lines.length > 3;
+
+  const availableBoards = boards.filter(b => b !== note.board);
 
   return (
     <Card
@@ -100,10 +108,30 @@ export const NoteCard = ({
             <Languages className="mr-2 h-3.5 w-3.5" />
             ترجمة
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onMove} className="text-xs">
-            <ArrowRight className="mr-2 h-3.5 w-3.5" />
-            نقل إلى
-          </DropdownMenuItem>
+          {availableBoards.length > 0 && (
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="text-xs">
+                <ArrowRight className="mr-2 h-3.5 w-3.5" />
+                نقل إلى
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent className="bg-popover shadow-lg z-50">
+                  {availableBoards.map(board => (
+                    <DropdownMenuItem
+                      key={board}
+                      className="text-xs"
+                      onClick={() => {
+                        onMoveTo(board);
+                        setMenuOpen(false);
+                      }}
+                    >
+                      {board}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+          )}
           <DropdownMenuItem onClick={onDelete} className="text-destructive text-xs">
             <Trash2 className="mr-2 h-3.5 w-3.5" />
             حذف
