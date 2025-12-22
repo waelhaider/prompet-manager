@@ -75,6 +75,57 @@ const Index = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Handle back button/gesture to close dialogs instead of navigating away
+  useEffect(() => {
+    const anyDialogOpen = menuOpen || reorderOpen || addBoardOpen || editBoardOpen || 
+      deleteBoardOpen || restoreOpen || translateOpen || viewingImage || 
+      confirmDeleteNoteId || confirmDeleteBoardName;
+
+    if (anyDialogOpen) {
+      // Push a state when dialog opens
+      window.history.pushState({ dialogOpen: true }, '');
+    }
+
+    const handlePopState = (event: PopStateEvent) => {
+      // Close dialogs in order of priority
+      if (viewingImage) {
+        setViewingImage(null);
+        event.preventDefault();
+      } else if (translateOpen) {
+        setTranslateOpen(false);
+        event.preventDefault();
+      } else if (confirmDeleteNoteId) {
+        setConfirmDeleteNoteId(null);
+        event.preventDefault();
+      } else if (confirmDeleteBoardName) {
+        setConfirmDeleteBoardName(null);
+        event.preventDefault();
+      } else if (deleteBoardOpen) {
+        setDeleteBoardOpen(false);
+        event.preventDefault();
+      } else if (editBoardOpen) {
+        setEditBoardOpen(false);
+        event.preventDefault();
+      } else if (addBoardOpen) {
+        setAddBoardOpen(false);
+        event.preventDefault();
+      } else if (restoreOpen) {
+        setRestoreOpen(false);
+        event.preventDefault();
+      } else if (reorderOpen) {
+        setReorderOpen(false);
+        event.preventDefault();
+      } else if (menuOpen) {
+        setMenuOpen(false);
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [menuOpen, reorderOpen, addBoardOpen, editBoardOpen, deleteBoardOpen, 
+      restoreOpen, translateOpen, viewingImage, confirmDeleteNoteId, confirmDeleteBoardName]);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
