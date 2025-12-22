@@ -19,6 +19,7 @@ interface NoteCardProps {
     id: string;
     content: string;
     board: string;
+    images?: string[];
   };
   boards: string[];
   isSelected: boolean;
@@ -29,6 +30,7 @@ interface NoteCardProps {
   onCopy: () => void;
   onTranslate: () => void;
   fontSize?: number;
+  onImageClick?: (image: string) => void;
 }
 
 export const NoteCard = ({
@@ -42,13 +44,14 @@ export const NoteCard = ({
   onCopy,
   onTranslate,
   fontSize = 14,
+  onImageClick,
 }: NoteCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const lines = note.content.split('\n');
   const previewLines = lines.slice(0, 3);
-  const hasMore = lines.length > 3;
+  const hasMore = lines.length > 3 || (note.images && note.images.length > 0);
 
   const availableBoards = boards.filter(b => b !== note.board);
 
@@ -66,9 +69,27 @@ export const NoteCard = ({
     >
       <div className="pr-8">
         {isExpanded ? (
-          <p className="whitespace-pre-wrap text-foreground leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
-            {note.content}
-          </p>
+          <>
+            <p className="whitespace-pre-wrap text-foreground leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
+              {note.content}
+            </p>
+            {note.images && note.images.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {note.images.map((img, idx) => (
+                  <img 
+                    key={idx}
+                    src={img} 
+                    alt={`صورة ${idx + 1}`} 
+                    className="max-w-[25%] h-auto rounded border cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onImageClick?.(img);
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         ) : (
           <>
             {previewLines.map((line, idx) => (
@@ -76,7 +97,22 @@ export const NoteCard = ({
                 {line || '\u00A0'}
               </p>
             ))}
-            {hasMore && (
+            {note.images && note.images.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {note.images.slice(0, 3).map((img, idx) => (
+                  <img 
+                    key={idx}
+                    src={img} 
+                    alt={`صورة ${idx + 1}`} 
+                    className="h-12 w-auto rounded border"
+                  />
+                ))}
+                {note.images.length > 3 && (
+                  <span className="text-xs text-muted-foreground self-center">+{note.images.length - 3}</span>
+                )}
+              </div>
+            )}
+            {hasMore && !note.images?.length && (
               <p className="text-muted-foreground text-sm mt-1">...</p>
             )}
           </>
