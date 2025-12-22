@@ -9,7 +9,7 @@ import { ReorderDialog } from "@/components/ReorderDialog";
 import { TranslateDialog } from "@/components/TranslateDialog";
 import { useToast } from "@/hooks/use-toast";
 import { useIndexedDB } from "@/hooks/useIndexedDB";
-import { Save, Trash2, ImagePlus, X, Loader2 } from "lucide-react";
+import { Save, Trash2, ImagePlus, X, Loader2, ArrowUp } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -50,7 +50,9 @@ const Index = () => {
   const [pendingImages, setPendingImages] = useState<string[]>([]);
   const [viewingImage, setViewingImage] = useState<string | null>(null);
   const [highlightedNoteId, setHighlightedNoteId] = useState<string | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const notesContainerRef = useRef<HTMLDivElement>(null);
   const {
     toast
   } = useToast();
@@ -61,6 +63,21 @@ const Index = () => {
       setActiveBoard(boards[0]);
     }
   }, [boards, activeBoard, isLoading]);
+
+  // Handle scroll to show/hide scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show button after scrolling past approximately 5 notes (about 400px)
+      setShowScrollTop(window.scrollY > 400);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const increaseFontSize = () => {
     setFontSize(Math.min(fontSize + 1, 24));
@@ -611,6 +628,18 @@ const Index = () => {
             </div> : filteredNotes.map(note => <div key={note.id} id={`note-${note.id}`}><NoteCard note={note} boards={boards} isSelected={selectedNoteId === note.id || highlightedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)} onTranslate={() => translateNote(note)} fontSize={fontSize} onImageClick={setViewingImage} /></div>)}
         </div>
       </div>
+
+      {/* Scroll to top button */}
+      {showScrollTop && (
+        <Button
+          onClick={scrollToTop}
+          className="fixed bottom-6 left-6 z-50 rounded-full shadow-lg animate-fade-in"
+          size="icon"
+          variant="secondary"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </Button>
+      )}
 
       <ReorderDialog open={reorderOpen} onOpenChange={setReorderOpen} boards={boards} onReorder={setBoards} />
 
