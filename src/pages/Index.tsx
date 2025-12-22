@@ -138,14 +138,40 @@ const Index = () => {
     setTranslateOpen(true);
   };
 
-  const exportData = () => {
+  const exportData = async () => {
     const data = {
       boards,
       notes,
       deletedBoards,
       exportDate: new Date().toISOString()
     };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    
+    // Try modern File System Access API first (shows save dialog)
+    if ('showSaveFilePicker' in window) {
+      try {
+        const handle = await (window as any).showSaveFilePicker({
+          suggestedName: `notes-backup-${new Date().toISOString().split('T')[0]}.json`,
+          types: [{
+            description: 'JSON Files',
+            accept: { 'application/json': ['.json'] }
+          }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        toast({
+          title: "تم التصدير",
+          description: "تم تصدير البيانات بنجاح"
+        });
+        return;
+      } catch (err: any) {
+        if (err.name === 'AbortError') return; // User cancelled
+      }
+    }
+    
+    // Fallback for browsers that don't support showSaveFilePicker
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -258,7 +284,11 @@ const Index = () => {
       return;
     }
     const boardNotes = notes.filter(n => n.board === activeBoard);
-    setDeletedBoards([...deletedBoards, { board: activeBoard, notes: boardNotes }]);
+    const newDeletedBoards = [...deletedBoards, { board: activeBoard, notes: boardNotes }];
+    setDeletedBoards(newDeletedBoards);
+    // Save immediately to localStorage to ensure persistence
+    localStorage.setItem("deletedBoards", JSON.stringify(newDeletedBoards));
+    
     setBoards(boards.filter(b => b !== activeBoard));
     setNotes(notes.filter(n => n.board !== activeBoard));
     setActiveBoard(boards[0] === activeBoard ? boards[1] : boards[0]);
