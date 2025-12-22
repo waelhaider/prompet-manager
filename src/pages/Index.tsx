@@ -527,13 +527,21 @@ const Index = () => {
       description: `تم استعادة ملاحظات ${deletedItem.board} إلى ${targetBoard}`
     });
   };
+  // Detect text direction based on majority of characters
+  const getTextDirection = (text: string) => {
+    const arabicPattern = /[\u0600-\u06FF]/g;
+    const latinPattern = /[a-zA-Z]/g;
+    const arabicCount = (text.match(arabicPattern) || []).length;
+    const latinCount = (text.match(latinPattern) || []).length;
+    return arabicCount >= latinCount ? 'rtl' : 'ltr';
+  };
   const filteredNotes = notes.filter(n => n.board === activeBoard);
   return <div className="min-h-screen bg-background" dir="rtl">
       <BoardTabs boards={boards} activeBoard={activeBoard} onBoardChange={setActiveBoard} onMenuOpen={() => setMenuOpen(true)} />
 
       <div className="container max-w-4xl mx-auto p-4 space-y-4">
         <div className="space-y-3 rounded-md">
-          <Textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={3} className="resize-none" style={{ fontSize: `${fontSize}px` }} />
+          <Textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={3} className="resize-none" style={{ fontSize: `${fontSize}px` }} dir={getTextDirection(noteContent)} />
           
           {/* Pending Images Preview */}
           {pendingImages.length > 0 && (
