@@ -77,7 +77,7 @@ export const NoteCard = ({
         setIsExpanded(!isExpanded);
       }}
     >
-      <div className="pr-8 flex gap-2 items-start">
+      <div className="flex gap-2 items-start">
         {/* Images on the left */}
         {note.images && note.images.length > 0 && (
           <div className="flex-shrink-0 grid grid-cols-2 gap-0.5 content-start" style={{ width: '88px' }}>
