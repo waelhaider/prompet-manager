@@ -174,7 +174,7 @@ export const TranslateDialog = ({
             </div>
 
             {/* Swap Button */}
-            <div className="flex items-center justify-center pt-14">
+            <div className="flex flex-col items-center justify-center gap-2 pt-14">
               <Button
                 variant="ghost"
                 size="icon"
@@ -184,6 +184,18 @@ export const TranslateDialog = ({
               >
                 <ArrowLeftRight className="h-4 w-4" />
               </Button>
+              {onSaveTranslation && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="h-8"
+                  onClick={handleSaveTranslation}
+                  disabled={!translatedText}
+                >
+                  <Save className="h-3 w-3 ml-1" />
+                  حفظ
+                </Button>
+              )}
             </div>
 
             {/* Target Language Section */}
@@ -225,29 +237,6 @@ export const TranslateDialog = ({
                 نسخ الترجمة
               </Button>
             </div>
-          </div>
-          
-          <div className="flex justify-center gap-2 pt-2">
-            <Button
-              size="sm"
-              className="h-8"
-              onClick={() => translateText(sourceText)}
-              disabled={isLoading || !sourceText || sourceLang === targetLang}
-            >
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "ترجم"}
-            </Button>
-            {onSaveTranslation && (
-              <Button
-                size="sm"
-                variant="secondary"
-                className="h-8"
-                onClick={handleSaveTranslation}
-                disabled={!translatedText}
-              >
-                <Save className="h-3 w-3 ml-1" />
-                حفظ الترجمة
-              </Button>
-            )}
           </div>
         </div>
       </DialogContent>
