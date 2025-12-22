@@ -68,7 +68,7 @@ export const NoteCard = ({
   return (
     <Card
       className={cn(
-        "relative p-3 cursor-pointer transition-all duration-200",
+        "relative p-3 pb-8 cursor-pointer transition-all duration-200",
         "hover:bg-note-hover hover:shadow-md",
         isSelected && "bg-note-selected ring-2 ring-primary"
       )}
