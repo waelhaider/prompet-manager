@@ -129,9 +129,16 @@ export const TranslateDialog = ({
   };
 
   const swapTexts = () => {
+    // تبديل النصوص
     const tempText = sourceText;
     setSourceText(translatedText);
     setTranslatedText(tempText);
+    
+    // تبديل اللغات
+    const actualSourceLang = sourceLang === "auto" ? (detectedLang || "en") : sourceLang;
+    setSourceLang(targetLang);
+    setTargetLang(actualSourceLang);
+    setDetectedLang(null);
   };
 
   const handleSaveTranslation = () => {
