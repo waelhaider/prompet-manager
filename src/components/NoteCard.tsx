@@ -53,6 +53,13 @@ export const NoteCard = ({
   const previewLines = lines.slice(0, 3);
   const hasMore = lines.length > 3 || (note.images && note.images.length > 0);
 
+  // Detect text direction based on first character
+  const isArabic = (text: string) => {
+    const arabicPattern = /[\u0600-\u06FF]/;
+    return arabicPattern.test(text.trim().charAt(0));
+  };
+  const textDirection = isArabic(note.content) ? 'rtl' : 'ltr';
+
   const availableBoards = boards.filter(b => b !== note.board);
 
   return (
@@ -90,18 +97,21 @@ export const NoteCard = ({
         )}
         
         {/* Text on the right */}
-        <div className="flex-1 min-w-0 overflow-hidden" style={{ maxHeight: isExpanded ? 'none' : '4.5em' }}>
+        <div className="flex-1 min-w-0 overflow-hidden" style={{ maxHeight: isExpanded ? 'none' : '4.5em', direction: textDirection, textAlign: textDirection === 'rtl' ? 'right' : 'left' }}>
           {isExpanded ? (
             <p className="whitespace-pre-wrap text-foreground leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
               {note.content}
             </p>
           ) : (
             <>
-              {previewLines.map((line, idx) => (
-                <p key={idx} className="text-foreground leading-relaxed break-words whitespace-pre-wrap line-clamp-1" style={{ fontSize: `${fontSize}px` }}>
-                  {line || '\u00A0'}
-                </p>
-              ))}
+              {previewLines.map((line, idx) => {
+                const lineDirection = isArabic(line) ? 'rtl' : 'ltr';
+                return (
+                  <p key={idx} className="text-foreground leading-relaxed break-words whitespace-pre-wrap line-clamp-1" style={{ fontSize: `${fontSize}px`, direction: lineDirection, textAlign: lineDirection === 'rtl' ? 'right' : 'left' }}>
+                    {line || '\u00A0'}
+                  </p>
+                );
+              })}
               {hasMore && (
                 <p className="text-muted-foreground text-sm">...</p>
               )}
