@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -47,6 +47,7 @@ export const TranslateDialog = ({
   const [sourceText, setSourceText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (open && originalText) {
@@ -55,11 +56,24 @@ export const TranslateDialog = ({
     }
   }, [open, originalText]);
 
+  // Auto-translate with debounce when source text changes
   useEffect(() => {
-    if (open && sourceText && (sourceLang !== targetLang)) {
-      translateText(sourceText);
+    if (!open || !sourceText || sourceLang === targetLang) return;
+    
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
     }
-  }, [sourceLang, targetLang]);
+    
+    debounceRef.current = setTimeout(() => {
+      translateText(sourceText);
+    }, 500); // Wait 500ms after user stops typing
+    
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [sourceText, sourceLang, targetLang, open]);
 
   const translateText = async (textToTranslate: string) => {
     if (!textToTranslate || sourceLang === targetLang) {
