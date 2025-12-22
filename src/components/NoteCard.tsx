@@ -67,8 +67,8 @@ export const NoteCard = ({
         setIsExpanded(!isExpanded);
       }}
     >
-      <div className="pr-8 flex flex-row-reverse gap-2">
-        {/* Images on the right */}
+      <div className="pr-8 flex gap-2">
+        {/* Images on the left */}
         {note.images && note.images.length > 0 && (
           <div className="flex-shrink-0 grid grid-cols-2 gap-0.5" style={{ width: '88px' }}>
             {(isExpanded ? note.images : note.images.slice(0, 4)).map((img, idx) => (
@@ -89,7 +89,7 @@ export const NoteCard = ({
           </div>
         )}
         
-        {/* Text on the left */}
+        {/* Text on the right */}
         <div className="flex-1 min-w-0 overflow-hidden" style={{ maxHeight: isExpanded ? 'none' : '4.5em' }}>
           {isExpanded ? (
             <p className="whitespace-pre-wrap text-foreground leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
