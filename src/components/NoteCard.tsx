@@ -67,56 +67,47 @@ export const NoteCard = ({
         setIsExpanded(!isExpanded);
       }}
     >
-      <div className="pr-8">
-        {isExpanded ? (
-          <>
+      <div className="pr-8 flex flex-row-reverse gap-3">
+        {/* Images on the right */}
+        {note.images && note.images.length > 0 && (
+          <div className="flex-shrink-0 grid grid-cols-2 gap-1 w-24">
+            {(isExpanded ? note.images : note.images.slice(0, 4)).map((img, idx) => (
+              <img 
+                key={idx}
+                src={img} 
+                alt={`صورة ${idx + 1}`} 
+                className="w-11 h-11 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onImageClick?.(img);
+                }}
+              />
+            ))}
+            {!isExpanded && note.images.length > 4 && (
+              <span className="text-xs text-muted-foreground flex items-center justify-center">+{note.images.length - 4}</span>
+            )}
+          </div>
+        )}
+        
+        {/* Text on the left */}
+        <div className="flex-1 min-w-0">
+          {isExpanded ? (
             <p className="whitespace-pre-wrap text-foreground leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
               {note.content}
             </p>
-            {note.images && note.images.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {note.images.map((img, idx) => (
-                  <img 
-                    key={idx}
-                    src={img} 
-                    alt={`صورة ${idx + 1}`} 
-                    className="max-w-[25%] h-auto rounded border cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onImageClick?.(img);
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </>
-        ) : (
-          <>
-            {previewLines.map((line, idx) => (
-              <p key={idx} className="text-foreground leading-relaxed break-words whitespace-pre-wrap" style={{ fontSize: `${fontSize}px` }}>
-                {line || '\u00A0'}
-              </p>
-            ))}
-            {note.images && note.images.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {note.images.slice(0, 3).map((img, idx) => (
-                  <img 
-                    key={idx}
-                    src={img} 
-                    alt={`صورة ${idx + 1}`} 
-                    className="h-12 w-auto rounded border"
-                  />
-                ))}
-                {note.images.length > 3 && (
-                  <span className="text-xs text-muted-foreground self-center">+{note.images.length - 3}</span>
-                )}
-              </div>
-            )}
-            {hasMore && !note.images?.length && (
-              <p className="text-muted-foreground text-sm mt-1">...</p>
-            )}
-          </>
-        )}
+          ) : (
+            <>
+              {previewLines.map((line, idx) => (
+                <p key={idx} className="text-foreground leading-relaxed break-words whitespace-pre-wrap" style={{ fontSize: `${fontSize}px` }}>
+                  {line || '\u00A0'}
+                </p>
+              ))}
+              {hasMore && (
+                <p className="text-muted-foreground text-sm mt-1">...</p>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
