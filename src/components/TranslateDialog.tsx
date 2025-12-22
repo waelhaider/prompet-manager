@@ -128,11 +128,8 @@ export const TranslateDialog = ({
 
   const swapTexts = () => {
     const tempText = sourceText;
-    const tempLang = sourceLang;
     setSourceText(translatedText);
-    setSourceLang(targetLang);
     setTranslatedText(tempText);
-    setTargetLang(tempLang);
   };
 
   const handleSaveTranslation = () => {
