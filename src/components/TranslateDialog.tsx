@@ -22,6 +22,7 @@ interface TranslateDialogProps {
 const RTL_LANGUAGES = ["ar", "he", "fa", "ur"];
 
 const LANGUAGES = [
+  { code: "auto", name: "تلقائي" },
   { code: "en", name: "الإنجليزية" },
   { code: "ar", name: "العربية" },
   { code: "fr", name: "الفرنسية" },
@@ -36,37 +37,45 @@ const LANGUAGES = [
   { code: "tr", name: "التركية" },
 ];
 
+const getLanguageName = (code: string) => {
+  const lang = LANGUAGES.find(l => l.code === code);
+  return lang?.name || code;
+};
+
 export const TranslateDialog = ({
   open,
   onOpenChange,
   originalText,
   onSaveTranslation,
 }: TranslateDialogProps) => {
-  const [sourceLang, setSourceLang] = useState("ar");
+  const [sourceLang, setSourceLang] = useState("auto");
   const [targetLang, setTargetLang] = useState("en");
   const [sourceText, setSourceText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [detectedLang, setDetectedLang] = useState<string | null>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (open && originalText) {
       setSourceText(originalText);
-      translateText(originalText);
+      setSourceLang("auto");
+      setDetectedLang(null);
+      translateText(originalText, "auto");
     }
   }, [open, originalText]);
 
   // Auto-translate with debounce when source text changes
   useEffect(() => {
-    if (!open || !sourceText || sourceLang === targetLang) return;
+    if (!open || !sourceText) return;
     
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
     
     debounceRef.current = setTimeout(() => {
-      translateText(sourceText);
-    }, 500); // Wait 500ms after user stops typing
+      translateText(sourceText, sourceLang);
+    }, 500);
     
     return () => {
       if (debounceRef.current) {
@@ -75,15 +84,15 @@ export const TranslateDialog = ({
     };
   }, [sourceText, sourceLang, targetLang, open]);
 
-  const translateText = async (textToTranslate: string) => {
-    if (!textToTranslate || sourceLang === targetLang) {
-      setTranslatedText(textToTranslate);
+  const translateText = async (textToTranslate: string, fromLang: string) => {
+    if (!textToTranslate) {
+      setTranslatedText("");
       return;
     }
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(textToTranslate)}`
+        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${fromLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(textToTranslate)}`
       );
       
       if (!response.ok) {
@@ -92,13 +101,18 @@ export const TranslateDialog = ({
       
       const data = await response.json();
       
-      // تجميع النص المترجم من الاستجابة
-      let translatedText = '';
-      if (data && data[0]) {
-        translatedText = data[0].map((item: any) => item[0]).join('');
+      // Get detected language from response (index 2)
+      if (data[2] && fromLang === "auto") {
+        setDetectedLang(data[2]);
       }
       
-      setTranslatedText(translatedText || "حدث خطأ في الترجمة.");
+      // تجميع النص المترجم من الاستجابة
+      let result = '';
+      if (data && data[0]) {
+        result = data[0].map((item: any) => item[0]).join('');
+      }
+      
+      setTranslatedText(result || "حدث خطأ في الترجمة.");
     } catch (error) {
       console.error("Translation error:", error);
       setTranslatedText("حدث خطأ في الترجمة. يرجى المحاولة مرة أخرى.");
@@ -142,8 +156,18 @@ export const TranslateDialog = ({
           <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-start">
             {/* Source Language Section */}
             <div className="space-y-2">
-              <Label className="text-sm font-semibold block">اللغة الأصلية</Label>
-              <Select value={sourceLang} onValueChange={setSourceLang}>
+              <Label className="text-sm font-semibold block">
+                اللغة الأصلية
+                {sourceLang === "auto" && detectedLang && (
+                  <span className="text-xs text-muted-foreground mr-1">
+                    ({getLanguageName(detectedLang)})
+                  </span>
+                )}
+              </Label>
+              <Select value={sourceLang} onValueChange={(val) => {
+                setSourceLang(val);
+                if (val !== "auto") setDetectedLang(null);
+              }}>
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue />
                 </SelectTrigger>
@@ -160,7 +184,7 @@ export const TranslateDialog = ({
                 onChange={(e) => setSourceText(e.target.value)}
                 className="min-h-[180px] max-h-[250px] text-sm resize-none"
                 placeholder="اكتب النص هنا..."
-                dir={isRTL(sourceLang) ? "rtl" : "ltr"}
+                dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
               />
               <Button
                 variant="outline"
