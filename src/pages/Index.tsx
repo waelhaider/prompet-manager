@@ -224,6 +224,102 @@ const Index = () => {
     });
   };
 
+  const exportBoard = async () => {
+    const boardNotes = notes.filter(n => n.board === activeBoard);
+    const data = {
+      boardName: activeBoard,
+      notes: boardNotes,
+      exportDate: new Date().toISOString()
+    };
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    
+    if ('showSaveFilePicker' in window) {
+      try {
+        const handle = await (window as any).showSaveFilePicker({
+          suggestedName: `${activeBoard}-${new Date().toISOString().split('T')[0]}.json`,
+          types: [{
+            description: 'JSON Files',
+            accept: { 'application/json': ['.json'] }
+          }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        toast({
+          title: "تم التصدير",
+          description: `تم تصدير لوحة "${activeBoard}" بنجاح`
+        });
+        return;
+      } catch (err: any) {
+        if (err.name === 'AbortError') return;
+      }
+    }
+    
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${activeBoard}-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({
+      title: "تم التصدير",
+      description: `تم تصدير لوحة "${activeBoard}" بنجاح`
+    });
+  };
+
+  const importBoard = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = JSON.parse(content);
+        
+        if (data.boardName && data.notes) {
+          // Check if board already exists
+          let newBoardName = data.boardName;
+          if (boards.includes(newBoardName)) {
+            let counter = 1;
+            while (boards.includes(`${data.boardName} (${counter})`)) {
+              counter++;
+            }
+            newBoardName = `${data.boardName} (${counter})`;
+          }
+          
+          // Add new board
+          setBoards([...boards, newBoardName]);
+          
+          // Add notes with new board name
+          const importedNotes = data.notes.map((note: any) => ({
+            ...note,
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+            board: newBoardName
+          }));
+          setNotes([...notes, ...importedNotes]);
+          
+          setActiveBoard(newBoardName);
+          toast({
+            title: "تم الاستيراد",
+            description: `تم استيراد لوحة "${newBoardName}" مع ${importedNotes.length} ملاحظات`
+          });
+        } else {
+          throw new Error("Invalid board file format");
+        }
+      } catch (error) {
+        toast({
+          title: "خطأ",
+          description: "فشل استيراد اللوحة. تأكد من صحة الملف.",
+          variant: "destructive"
+        });
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
   const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -468,6 +564,8 @@ const Index = () => {
         onRestoreBoards={() => setRestoreOpen(true)}
         onExport={exportData}
         onImport={importData}
+        onExportBoard={exportBoard}
+        onImportBoard={importBoard}
       />
 
       <Dialog open={restoreOpen} onOpenChange={setRestoreOpen}>
