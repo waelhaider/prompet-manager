@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Plus, Edit, Trash2, ArrowUpDown, Download, Upload, RotateCcw } from "lucide-react";
+import { Plus, Edit, Trash2, ArrowUpDown, Download, Upload, RotateCcw, FileDown, FileUp } from "lucide-react";
 import { useRef } from "react";
 
 interface BoardManagementProps {
@@ -13,6 +13,8 @@ interface BoardManagementProps {
   onRestoreBoards: () => void;
   onExport: () => void;
   onImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onExportBoard: () => void;
+  onImportBoard: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const BoardManagement = ({
@@ -25,8 +27,11 @@ export const BoardManagement = ({
   onRestoreBoards,
   onExport,
   onImport,
+  onExportBoard,
+  onImportBoard,
 }: BoardManagementProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const boardFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAction = (action: () => void) => {
     action();
@@ -61,9 +66,28 @@ export const BoardManagement = ({
             المحذوفات
           </Button>
           <div className="border-t border-border my-2" />
+          <Button onClick={() => handleAction(onExportBoard)} variant="ghost" size="sm" className="justify-start gap-2">
+            <FileDown className="h-4 w-4" />
+            تصدير اللوحة الحالية
+          </Button>
+          <input
+            ref={boardFileInputRef}
+            type="file"
+            accept=".json"
+            onChange={(e) => {
+              onImportBoard(e);
+              onOpenChange(false);
+            }}
+            className="hidden"
+          />
+          <Button onClick={() => boardFileInputRef.current?.click()} variant="ghost" size="sm" className="justify-start gap-2">
+            <FileUp className="h-4 w-4" />
+            استيراد لوحة
+          </Button>
+          <div className="border-t border-border my-2" />
           <Button onClick={() => handleAction(onExport)} variant="ghost" size="sm" className="justify-start gap-2">
             <Download className="h-4 w-4" />
-            تصدير البيانات
+            تصدير كل البيانات
           </Button>
           <input
             ref={fileInputRef}
@@ -77,7 +101,7 @@ export const BoardManagement = ({
           />
           <Button onClick={() => fileInputRef.current?.click()} variant="ghost" size="sm" className="justify-start gap-2">
             <Upload className="h-4 w-4" />
-            استيراد البيانات
+            استيراد كل البيانات
           </Button>
         </div>
       </SheetContent>
