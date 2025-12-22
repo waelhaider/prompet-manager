@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,36 +8,29 @@ import { BoardManagement } from "@/components/BoardManagement";
 import { ReorderDialog } from "@/components/ReorderDialog";
 import { TranslateDialog } from "@/components/TranslateDialog";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Trash2, ImagePlus, X } from "lucide-react";
+import { useIndexedDB } from "@/hooks/useIndexedDB";
+import { Save, Trash2, ImagePlus, X, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-interface Note {
-  id: string;
-  content: string;
-  board: string;
-  images?: string[];
-}
+import { Note } from "@/lib/indexedDB";
 const Index = () => {
-  const [boards, setBoards] = useState<string[]>(() => {
-    const saved = localStorage.getItem("boards");
-    return saved ? JSON.parse(saved) : ["الرئيسية"];
-  });
-  const [deletedBoards, setDeletedBoards] = useState<{board: string, notes: Note[]}[]>(() => {
-    const saved = localStorage.getItem("deletedBoards");
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [deletedNotes, setDeletedNotes] = useState<Note[]>(() => {
-    const saved = localStorage.getItem("deletedNotes");
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [activeBoard, setActiveBoard] = useState<string>(boards[0]);
+  const {
+    boards,
+    setBoards,
+    notes,
+    setNotes,
+    deletedBoards,
+    setDeletedBoards,
+    deletedNotes,
+    setDeletedNotes,
+    fontSize,
+    setFontSize,
+    isLoading,
+  } = useIndexedDB();
+
+  const [activeBoard, setActiveBoard] = useState<string>(boards[0] || "الرئيسية");
   const [noteContent, setNoteContent] = useState("");
-  const [notes, setNotes] = useState<Note[]>(() => {
-    const saved = localStorage.getItem("notes");
-    return saved ? JSON.parse(saved) : [];
-  });
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -58,35 +51,23 @@ const Index = () => {
   const [viewingImage, setViewingImage] = useState<string | null>(null);
   const [highlightedNoteId, setHighlightedNoteId] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const [fontSize, setFontSize] = useState<number>(() => {
-    const saved = localStorage.getItem("fontSize");
-    return saved ? parseInt(saved) : 14;
-  });
   const {
     toast
   } = useToast();
+
+  // Update activeBoard when boards are loaded or changed
   useEffect(() => {
-    localStorage.setItem("boards", JSON.stringify(boards));
-  }, [boards]);
-  useEffect(() => {
-    localStorage.setItem("notes", JSON.stringify(notes));
-  }, [notes]);
-  useEffect(() => {
-    localStorage.setItem("deletedBoards", JSON.stringify(deletedBoards));
-  }, [deletedBoards]);
-  useEffect(() => {
-    localStorage.setItem("deletedNotes", JSON.stringify(deletedNotes));
-  }, [deletedNotes]);
-  useEffect(() => {
-    localStorage.setItem("fontSize", fontSize.toString());
-  }, [fontSize]);
+    if (!isLoading && boards.length > 0 && !boards.includes(activeBoard)) {
+      setActiveBoard(boards[0]);
+    }
+  }, [boards, activeBoard, isLoading]);
 
   const increaseFontSize = () => {
-    setFontSize(prev => Math.min(prev + 1, 24));
+    setFontSize(Math.min(fontSize + 1, 24));
   };
 
   const decreaseFontSize = () => {
-    setFontSize(prev => Math.max(prev - 1, 10));
+    setFontSize(Math.max(fontSize - 1, 10));
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -543,6 +524,20 @@ const Index = () => {
     return arabicCount >= latinCount ? 'rtl' : 'ltr';
   };
   const filteredNotes = notes.filter(n => n.board === activeBoard);
+  
+  // Show loading state while data is being loaded from IndexedDB
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">جاري التحميل...</p>
+        </div>
+      </div>
+    );
+  }
+
+
   return <div className="min-h-screen bg-background" dir="rtl">
       <BoardTabs boards={boards} activeBoard={activeBoard} onBoardChange={setActiveBoard} onMenuOpen={() => setMenuOpen(true)} />
 
