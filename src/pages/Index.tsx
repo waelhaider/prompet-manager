@@ -457,7 +457,16 @@ const Index = () => {
         </DialogContent>
       </Dialog>
 
-      <TranslateDialog open={translateOpen} onOpenChange={setTranslateOpen} originalText={noteToTranslate?.content || ""} />
+      <TranslateDialog 
+        open={translateOpen} 
+        onOpenChange={setTranslateOpen} 
+        originalText={noteToTranslate?.content || ""} 
+        onSaveTranslation={(newText) => {
+          if (noteToTranslate) {
+            setNotes(notes.map(n => n.id === noteToTranslate.id ? { ...n, content: newText } : n));
+          }
+        }}
+      />
 
       <BoardManagement 
         open={menuOpen}
