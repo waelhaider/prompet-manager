@@ -541,7 +541,7 @@ const Index = () => {
 
       <div className="container max-w-4xl mx-auto p-4 space-y-4">
         <div className="space-y-3 rounded-md">
-          <Textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={3} className="resize-none" style={{ fontSize: `${fontSize}px` }} dir={getTextDirection(noteContent)} />
+          <Textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={editingNote ? Math.max(3, Math.min(15, noteContent.split('\n').length + 1)) : 3} className="resize-none" style={{ fontSize: `${fontSize}px` }} dir={getTextDirection(noteContent)} />
           
           {/* Pending Images Preview */}
           {pendingImages.length > 0 && (
