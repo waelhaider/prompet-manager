@@ -8,7 +8,7 @@ import { BoardManagement } from "@/components/BoardManagement";
 import { ReorderDialog } from "@/components/ReorderDialog";
 import { TranslateDialog } from "@/components/TranslateDialog";
 import { useToast } from "@/hooks/use-toast";
-import { Save } from "lucide-react";
+import { Save, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 interface Note {
@@ -133,6 +133,23 @@ const Index = () => {
         description: `تم استعادة الملاحظة إلى ${targetBoardName}`
       });
     }
+  };
+
+  const permanentlyDeleteNote = (noteId: string) => {
+    setDeletedNotes(deletedNotes.filter(n => n.id !== noteId));
+    toast({
+      title: "تم الحذف نهائياً",
+      description: "تم حذف الملاحظة نهائياً"
+    });
+  };
+
+  const permanentlyDeleteBoard = (boardName: string) => {
+    setDeletedBoards(deletedBoards.filter(d => d.board !== boardName));
+    setBoardToRestore("");
+    toast({
+      title: "تم الحذف نهائياً",
+      description: "تم حذف اللوحة وملاحظاتها نهائياً"
+    });
   };
   const editNote = (note: Note) => {
     setEditingNote(note);
@@ -498,9 +515,14 @@ const Index = () => {
                 {deletedNotes.map(note => (
                   <div key={note.id} className="flex items-center justify-between p-2 bg-muted rounded text-xs">
                     <span className="truncate flex-1 ml-2">{note.content.substring(0, 50)}...</span>
-                    <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => restoreNote(note.id)}>
-                      استعادة
-                    </Button>
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => restoreNote(note.id)}>
+                        استعادة
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-destructive hover:text-destructive" onClick={() => permanentlyDeleteNote(note.id)}>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -542,7 +564,11 @@ const Index = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                <DialogFooter>
+                <DialogFooter className="flex gap-2 sm:gap-0">
+                  <Button onClick={() => permanentlyDeleteBoard(boardToRestore)} size="sm" variant="destructive" disabled={!boardToRestore}>
+                    <Trash2 className="h-3 w-3 ml-1" />
+                    حذف نهائي
+                  </Button>
                   <Button onClick={restoreBoard} size="sm">استعادة اللوحة</Button>
                 </DialogFooter>
               </>
