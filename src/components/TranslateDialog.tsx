@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Loader2, Copy, ArrowLeftRight } from "lucide-react";
+import { Loader2, Copy, ArrowLeftRight, Save } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -16,7 +16,10 @@ interface TranslateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   originalText: string;
+  onSaveTranslation?: (newText: string) => void;
 }
+
+const RTL_LANGUAGES = ["ar", "he", "fa", "ur"];
 
 const LANGUAGES = [
   { code: "en", name: "الإنجليزية" },
@@ -37,6 +40,7 @@ export const TranslateDialog = ({
   open,
   onOpenChange,
   originalText,
+  onSaveTranslation,
 }: TranslateDialogProps) => {
   const [sourceLang, setSourceLang] = useState("ar");
   const [targetLang, setTargetLang] = useState("en");
@@ -103,6 +107,16 @@ export const TranslateDialog = ({
     setTargetLang(tempLang);
   };
 
+  const handleSaveTranslation = () => {
+    if (onSaveTranslation && translatedText) {
+      onSaveTranslation(translatedText);
+      toast.success("تم حفظ الترجمة في الملاحظة");
+      onOpenChange(false);
+    }
+  };
+
+  const isRTL = (langCode: string) => RTL_LANGUAGES.includes(langCode);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
@@ -132,6 +146,7 @@ export const TranslateDialog = ({
                 onChange={(e) => setSourceText(e.target.value)}
                 className="min-h-[180px] max-h-[250px] text-sm resize-none"
                 placeholder="اكتب النص هنا..."
+                dir={isRTL(sourceLang) ? "rtl" : "ltr"}
               />
               <Button
                 variant="outline"
@@ -182,6 +197,7 @@ export const TranslateDialog = ({
                   onChange={(e) => setTranslatedText(e.target.value)}
                   className="min-h-[180px] max-h-[250px] text-sm resize-none"
                   placeholder="الترجمة ستظهر هنا..."
+                  dir={isRTL(targetLang) ? "rtl" : "ltr"}
                 />
               )}
               <Button
@@ -197,7 +213,7 @@ export const TranslateDialog = ({
             </div>
           </div>
           
-          <div className="flex justify-center pt-2">
+          <div className="flex justify-center gap-2 pt-2">
             <Button
               size="sm"
               className="h-8"
@@ -206,6 +222,18 @@ export const TranslateDialog = ({
             >
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "ترجم"}
             </Button>
+            {onSaveTranslation && (
+              <Button
+                size="sm"
+                variant="secondary"
+                className="h-8"
+                onClick={handleSaveTranslation}
+                disabled={!translatedText}
+              >
+                <Save className="h-3 w-3 ml-1" />
+                حفظ الترجمة
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>
