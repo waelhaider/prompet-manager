@@ -10,6 +10,7 @@ import { TranslateDialog } from "@/components/TranslateDialog";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 interface Note {
   id: string;
@@ -51,6 +52,8 @@ const Index = () => {
   const [boardToRestore, setBoardToRestore] = useState("");
   const [noteToMove, setNoteToMove] = useState<Note | null>(null);
   const [noteToTranslate, setNoteToTranslate] = useState<Note | null>(null);
+  const [confirmDeleteNoteId, setConfirmDeleteNoteId] = useState<string | null>(null);
+  const [confirmDeleteBoardName, setConfirmDeleteBoardName] = useState<string | null>(null);
   const {
     toast
   } = useToast();
@@ -137,6 +140,7 @@ const Index = () => {
 
   const permanentlyDeleteNote = (noteId: string) => {
     setDeletedNotes(deletedNotes.filter(n => n.id !== noteId));
+    setConfirmDeleteNoteId(null);
     toast({
       title: "تم الحذف نهائياً",
       description: "تم حذف الملاحظة نهائياً"
@@ -146,6 +150,7 @@ const Index = () => {
   const permanentlyDeleteBoard = (boardName: string) => {
     setDeletedBoards(deletedBoards.filter(d => d.board !== boardName));
     setBoardToRestore("");
+    setConfirmDeleteBoardName(null);
     toast({
       title: "تم الحذف نهائياً",
       description: "تم حذف اللوحة وملاحظاتها نهائياً"
@@ -519,7 +524,7 @@ const Index = () => {
                       <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => restoreNote(note.id)}>
                         استعادة
                       </Button>
-                      <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-destructive hover:text-destructive" onClick={() => permanentlyDeleteNote(note.id)}>
+                      <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-destructive hover:text-destructive" onClick={() => setConfirmDeleteNoteId(note.id)}>
                         <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
@@ -565,7 +570,7 @@ const Index = () => {
                   </SelectContent>
                 </Select>
                 <DialogFooter className="flex gap-2 sm:gap-0">
-                  <Button onClick={() => permanentlyDeleteBoard(boardToRestore)} size="sm" variant="destructive" disabled={!boardToRestore}>
+                  <Button onClick={() => setConfirmDeleteBoardName(boardToRestore)} size="sm" variant="destructive" disabled={!boardToRestore}>
                     <Trash2 className="h-3 w-3 ml-1" />
                     حذف نهائي
                   </Button>
@@ -576,6 +581,42 @@ const Index = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Confirm Delete Note Dialog */}
+      <AlertDialog open={!!confirmDeleteNoteId} onOpenChange={(open) => !open && setConfirmDeleteNoteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد الحذف النهائي</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من حذف هذه الملاحظة نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={() => confirmDeleteNoteId && permanentlyDeleteNote(confirmDeleteNoteId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              حذف نهائياً
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirm Delete Board Dialog */}
+      <AlertDialog open={!!confirmDeleteBoardName} onOpenChange={(open) => !open && setConfirmDeleteBoardName(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد الحذف النهائي</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من حذف اللوحة "{confirmDeleteBoardName}" وجميع ملاحظاتها نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={() => confirmDeleteBoardName && permanentlyDeleteBoard(confirmDeleteBoardName)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              حذف نهائياً
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>;
 };
 export default Index;
