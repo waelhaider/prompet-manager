@@ -119,6 +119,15 @@ const Index = () => {
       } : n));
       setEditingNote(null);
       setHighlightedNoteId(editedNoteId);
+      
+      // Scroll to the edited note after a brief delay
+      setTimeout(() => {
+        const noteElement = document.getElementById(`note-${editedNoteId}`);
+        if (noteElement) {
+          noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      
       setTimeout(() => {
         setHighlightedNoteId(null);
       }, 5000);
@@ -599,7 +608,7 @@ const Index = () => {
         <div className="space-y-3">
           {filteredNotes.length === 0 ? <div className="text-center py-12 text-muted-foreground">
               لا توجد ملاحظات في هذه اللوحة
-            </div> : filteredNotes.map(note => <NoteCard key={note.id} note={note} boards={boards} isSelected={selectedNoteId === note.id || highlightedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)} onTranslate={() => translateNote(note)} fontSize={fontSize} onImageClick={setViewingImage} />)}
+            </div> : filteredNotes.map(note => <div key={note.id} id={`note-${note.id}`}><NoteCard note={note} boards={boards} isSelected={selectedNoteId === note.id || highlightedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)} onTranslate={() => translateNote(note)} fontSize={fontSize} onImageClick={setViewingImage} /></div>)}
         </div>
       </div>
 
