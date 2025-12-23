@@ -53,6 +53,7 @@ const Index = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [confirmClearAll, setConfirmClearAll] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const notesContainerRef = useRef<HTMLDivElement>(null);
   const {
     toast
@@ -290,8 +291,11 @@ const Index = () => {
       description: "يمكنك الآن تعديل الملاحظة",
     });
     window.setTimeout(() => t.dismiss(), 500);
-    // Scroll to top where the input box is
+    // Scroll to top and focus on textarea
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => {
+      textareaRef.current?.focus();
+    }, 300);
   };
   const moveNoteToBoard = (note: Note, targetBoardName: string) => {
     setNotes(notes.map(n => n.id === note.id ? {
@@ -633,7 +637,7 @@ const Index = () => {
 
       <div className="container max-w-4xl mx-auto px-1 py-2 space-y-2">
         <div className="space-y-1.5 rounded-md">
-          <Textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={editingNote ? Math.max(3, Math.min(15, noteContent.split('\n').length + 1)) : 3} className="resize-none" style={{ fontSize: `${fontSize}px` }} dir={getTextDirection(noteContent)} />
+          <Textarea ref={textareaRef} value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={editingNote ? Math.max(3, Math.min(15, noteContent.split('\n').length + 1)) : 3} className="resize-none" style={{ fontSize: `${fontSize}px` }} dir={getTextDirection(noteContent)} />
           
           {/* Pending Images Preview */}
           {pendingImages.length > 0 && (
