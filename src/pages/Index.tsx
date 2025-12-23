@@ -280,8 +280,11 @@ const Index = () => {
     setHighlightedNoteId(note.id);
     toast({
       title: "وضع التحرير",
-      description: "يمكنك الآن تعديل الملاحظة"
+      description: "يمكنك الآن تعديل الملاحظة",
+      duration: 2000,
     });
+    // Scroll to top where the input box is
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   const moveNoteToBoard = (note: Note, targetBoardName: string) => {
     setNotes(notes.map(n => n.id === note.id ? {
@@ -666,10 +669,22 @@ const Index = () => {
               تحميل صورة
             </Button>
             {editingNote && <Button onClick={() => {
-            setEditingNote(null);
-            setNoteContent("");
-            setPendingImages([]);
-          }} variant="outline" size="sm">
+              const editedNoteId = editingNote.id;
+              setEditingNote(null);
+              setNoteContent("");
+              setPendingImages([]);
+              // Keep the note highlighted for 5 seconds after cancel
+              setHighlightedNoteId(editedNoteId);
+              setTimeout(() => {
+                const noteElement = document.getElementById(`note-${editedNoteId}`);
+                if (noteElement) {
+                  noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }, 100);
+              setTimeout(() => {
+                setHighlightedNoteId(null);
+              }, 5000);
+            }} variant="outline" size="sm">
                 إلغاء
               </Button>}
           </div>
