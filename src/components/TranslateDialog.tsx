@@ -163,7 +163,7 @@ export const TranslateDialog = ({
           <div dir="rtl" className="grid grid-cols-[1fr_auto_1fr] gap-1 sm:gap-2 items-end">
             {/* Source Language Selector - Right */}
             <div className="space-y-1">
-              <Label className="text-sm font-semibold block">
+              <Label className="text-sm font-semibold block text-center">
                 اللغة الأصلية
                 {sourceLang === "auto" && detectedLang && (
                   <span className="text-xs text-muted-foreground mr-1">
@@ -204,7 +204,7 @@ export const TranslateDialog = ({
 
             {/* Target Language Selector - Left */}
             <div className="space-y-1">
-              <Label className="text-sm font-semibold block">اللغة المترجمة</Label>
+              <Label className="text-sm font-semibold block text-center">اللغة المترجمة</Label>
               <Select value={targetLang} onValueChange={setTargetLang}>
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue />
