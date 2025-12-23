@@ -201,7 +201,8 @@ const Index = () => {
       }, 5000);
       toast({
         title: "تم التحديث",
-        description: "تم تحديث الملاحظة بنجاح"
+        description: "تم تحديث الملاحظة بنجاح",
+        duration: 1000,
       });
     } else {
       const newNote: Note = {
@@ -236,7 +237,8 @@ const Index = () => {
     setNotes(notes.filter(n => n.id !== id));
     toast({
       title: "تم الحذف",
-      description: "تم نقل الملاحظة إلى المحذوفات"
+      description: "تم نقل الملاحظة إلى المحذوفات",
+      duration: 1000,
     });
   };
 
@@ -281,7 +283,7 @@ const Index = () => {
     toast({
       title: "وضع التحرير",
       description: "يمكنك الآن تعديل الملاحظة",
-      duration: 2000,
+      duration: 1000,
     });
     // Scroll to top where the input box is
     window.scrollTo({ top: 0, behavior: 'smooth' });
