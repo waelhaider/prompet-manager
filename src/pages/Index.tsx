@@ -790,7 +790,7 @@ const Index = () => {
       />
 
       <Dialog open={restoreOpen} onOpenChange={setRestoreOpen}>
-        <DialogContent className="bg-popover max-h-[80vh] overflow-y-auto">
+        <DialogContent className="bg-popover max-h-[80vh] overflow-y-auto rounded-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
               <span>المحذوفات</span>
@@ -818,7 +818,7 @@ const Index = () => {
             ) : (
               <div className="max-h-40 overflow-y-auto space-y-1">
                 {deletedNotes.map(note => (
-                  <div key={note.id} className="flex flex-col p-2 bg-muted rounded text-xs gap-1">
+                  <div key={note.id} className="flex flex-col p-2 bg-muted/50 rounded-lg text-xs gap-1">
                     <div className="flex items-center justify-between">
                       <span className="truncate flex-1 ml-2">{note.content.substring(0, 50)}...</span>
                       <div className="flex gap-1">
