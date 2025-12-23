@@ -183,7 +183,11 @@ export const NoteCard = ({
               </DropdownMenuItem>
               {availableBoards.length > 0 && (
                 <DropdownMenuItem 
-                  onClick={() => setShowMoveOptions(true)} 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowMoveOptions(true);
+                  }} 
                   className="text-xs"
                 >
                   <ArrowRight className="mr-2 h-3.5 w-3.5" />
