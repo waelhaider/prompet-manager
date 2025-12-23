@@ -1,17 +1,14 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Copy, Edit2, Trash2, ArrowRight, Languages } from "lucide-react";
+import { MoreVertical, Copy, Edit2, Trash2, ArrowRight, Languages, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-  DropdownMenuPortal,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
 interface NoteCardProps {
@@ -48,6 +45,7 @@ export const NoteCard = ({
 }: NoteCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showMoveOptions, setShowMoveOptions] = useState(false);
 
   const lines = note.content.split('\n');
   const previewLines = lines.slice(0, 3);
@@ -64,6 +62,13 @@ export const NoteCard = ({
   const textDirection = getTextDirection(note.content);
 
   const availableBoards = boards.filter(b => b !== note.board);
+
+  const handleMenuOpenChange = (open: boolean) => {
+    setMenuOpen(open);
+    if (!open) {
+      setShowMoveOptions(false);
+    }
+  };
 
   return (
     <Card
@@ -123,7 +128,7 @@ export const NoteCard = ({
         </div>
       </div>
 
-      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+      <DropdownMenu open={menuOpen} onOpenChange={handleMenuOpenChange}>
         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
           <Button
             variant="ghost"
@@ -135,54 +140,62 @@ export const NoteCard = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
-          className="w-40 bg-popover shadow-lg z-50"
+          className="w-44 bg-popover shadow-lg z-50"
           onClick={(e) => e.stopPropagation()}
         >
-          <DropdownMenuItem onClick={onCopy} className="text-xs">
-            <Copy className="mr-2 h-3.5 w-3.5" />
-            نسخ
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={onEdit} className="text-xs">
-            <Edit2 className="mr-2 h-3.5 w-3.5" />
-            تحرير
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={onTranslate} className="text-xs">
-            <Languages className="mr-2 h-3.5 w-3.5" />
-            ترجمة
-          </DropdownMenuItem>
-          {availableBoards.length > 0 && (
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger className="text-xs">
-                <ArrowRight className="mr-2 h-3.5 w-3.5" />
-                نقل إلى
-              </DropdownMenuSubTrigger>
-              <DropdownMenuPortal>
-                <DropdownMenuSubContent 
-                  className="bg-popover shadow-lg z-[100] max-h-[200px] overflow-y-auto"
-                  sideOffset={2}
-                  alignOffset={-5}
-                  collisionPadding={10}
+          {showMoveOptions ? (
+            <>
+              <DropdownMenuItem 
+                onClick={() => setShowMoveOptions(false)} 
+                className="text-xs font-medium"
+              >
+                <ChevronLeft className="mr-2 h-3.5 w-3.5" />
+                رجوع
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {availableBoards.map(board => (
+                <DropdownMenuItem
+                  key={board}
+                  className="text-xs"
+                  onClick={() => {
+                    onMoveTo(board);
+                    setMenuOpen(false);
+                  }}
                 >
-                  {availableBoards.map(board => (
-                    <DropdownMenuItem
-                      key={board}
-                      className="text-xs"
-                      onClick={() => {
-                        onMoveTo(board);
-                        setMenuOpen(false);
-                      }}
-                    >
-                      {board}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuSubContent>
-              </DropdownMenuPortal>
-            </DropdownMenuSub>
+                  <ArrowRight className="mr-2 h-3.5 w-3.5" />
+                  {board}
+                </DropdownMenuItem>
+              ))}
+            </>
+          ) : (
+            <>
+              <DropdownMenuItem onClick={onCopy} className="text-xs">
+                <Copy className="mr-2 h-3.5 w-3.5" />
+                نسخ
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onEdit} className="text-xs">
+                <Edit2 className="mr-2 h-3.5 w-3.5" />
+                تحرير
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onTranslate} className="text-xs">
+                <Languages className="mr-2 h-3.5 w-3.5" />
+                ترجمة
+              </DropdownMenuItem>
+              {availableBoards.length > 0 && (
+                <DropdownMenuItem 
+                  onClick={() => setShowMoveOptions(true)} 
+                  className="text-xs"
+                >
+                  <ArrowRight className="mr-2 h-3.5 w-3.5" />
+                  نقل إلى
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={onDelete} className="text-destructive text-xs">
+                <Trash2 className="mr-2 h-3.5 w-3.5" />
+                حذف
+              </DropdownMenuItem>
+            </>
           )}
-          <DropdownMenuItem onClick={onDelete} className="text-destructive text-xs">
-            <Trash2 className="mr-2 h-3.5 w-3.5" />
-            حذف
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </Card>
