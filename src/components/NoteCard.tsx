@@ -157,7 +157,7 @@ export const NoteCard = ({
       <div className="absolute bottom-1.5 left-1.5 right-1.5 flex items-center justify-between">
         {note.createdAt && (
           <span className="text-[10px] text-muted-foreground">
-            {new Date(note.createdAt).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' })} - {new Date(note.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}
+            {new Date(note.createdAt).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })} - {new Date(note.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
           </span>
         )}
         {!note.createdAt && <span />}
