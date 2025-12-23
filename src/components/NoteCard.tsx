@@ -118,12 +118,12 @@ export const NoteCard = ({
         {/* Text on the right */}
         <div className="flex-1 min-w-0 overflow-hidden" style={{ height: isExpanded ? 'auto' : undefined, minHeight: isExpanded ? undefined : `${lineCount * 1.5}em`, maxHeight: isExpanded ? undefined : '4.5em', direction: textDirection, textAlign: textDirection === 'rtl' ? 'right' : 'left' }}>
           {isExpanded ? (
-            <p className="whitespace-pre-wrap text-foreground leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
+            <p className="whitespace-pre-wrap text-foreground" style={{ fontSize: `${fontSize}px`, lineHeight: '1.5' }}>
               {note.content}
             </p>
           ) : (
             <div className="line-clamp-3">
-              <p className="text-foreground leading-relaxed break-words whitespace-pre-wrap" style={{ fontSize: `${fontSize}px` }}>
+              <p className="text-foreground break-words whitespace-pre-wrap" style={{ fontSize: `${fontSize}px`, lineHeight: '1.5' }}>
                 {note.content}
               </p>
             </div>
