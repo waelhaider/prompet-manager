@@ -157,7 +157,12 @@ export const NoteCard = ({
                 نقل إلى
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
-                <DropdownMenuSubContent className="bg-popover shadow-lg z-50">
+                <DropdownMenuSubContent 
+                  className="bg-popover shadow-lg z-[100] max-h-[200px] overflow-y-auto"
+                  sideOffset={2}
+                  alignOffset={-5}
+                  collisionPadding={10}
+                >
                   {availableBoards.map(board => (
                     <DropdownMenuItem
                       key={board}
