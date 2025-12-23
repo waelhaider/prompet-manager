@@ -625,8 +625,8 @@ const Index = () => {
   return <div className="min-h-screen bg-background" dir="rtl">
       <BoardTabs boards={boards} activeBoard={activeBoard} onBoardChange={setActiveBoard} onMenuOpen={() => setMenuOpen(true)} />
 
-      <div className="container max-w-4xl mx-auto px-1 py-4 space-y-4">
-        <div className="space-y-3 rounded-md">
+      <div className="container max-w-4xl mx-auto px-1 py-2 space-y-2">
+        <div className="space-y-1.5 rounded-md">
           <Textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={editingNote ? Math.max(3, Math.min(15, noteContent.split('\n').length + 1)) : 3} className="resize-none" style={{ fontSize: `${fontSize}px` }} dir={getTextDirection(noteContent)} />
           
           {/* Pending Images Preview */}
@@ -692,7 +692,7 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-1.5">
           {filteredNotes.length === 0 ? <div className="text-center py-12 text-muted-foreground">
               لا توجد ملاحظات في هذه اللوحة
             </div> : filteredNotes.map(note => <div key={note.id} id={`note-${note.id}`}><NoteCard note={note} boards={boards} isSelected={selectedNoteId === note.id || highlightedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)} onTranslate={() => translateNote(note)} fontSize={fontSize} onImageClick={setViewingImage} /></div>)}
@@ -901,13 +901,25 @@ const Index = () => {
 
       {/* Image Viewer Dialog */}
       <Dialog open={!!viewingImage} onOpenChange={(open) => !open && setViewingImage(null)}>
-        <DialogContent className="max-w-[90vw] max-h-[90vh] p-2">
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-1 overflow-hidden">
           {viewingImage && (
-            <img 
-              src={viewingImage} 
-              alt="صورة مكبرة" 
-              className="w-full h-auto max-h-[85vh] object-contain"
-            />
+            <div 
+              className="w-full h-full overflow-auto touch-pinch-zoom"
+              style={{ 
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pinch-zoom pan-x pan-y'
+              }}
+            >
+              <img 
+                src={viewingImage} 
+                alt="صورة مكبرة" 
+                className="w-full h-auto max-h-[90vh] object-contain select-none"
+                style={{ 
+                  touchAction: 'pinch-zoom pan-x pan-y',
+                  transformOrigin: 'center center'
+                }}
+              />
+            </div>
           )}
         </DialogContent>
       </Dialog>
