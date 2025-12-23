@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MoreVertical, Copy, Edit2, Trash2, ArrowRight, Languages, ChevronLeft } from "lucide-react";
@@ -57,6 +57,26 @@ export const NoteCard = ({
   const [menuOpen, setMenuOpen] = useState(false);
   const [showMoveOptions, setShowMoveOptions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isActivated, setIsActivated] = useState(false);
+  const activationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const activateCard = () => {
+    if (activationTimeoutRef.current) {
+      clearTimeout(activationTimeoutRef.current);
+    }
+    setIsActivated(true);
+    activationTimeoutRef.current = setTimeout(() => {
+      setIsActivated(false);
+    }, 5000);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (activationTimeoutRef.current) {
+        clearTimeout(activationTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const lines = note.content.split('\n');
   const lineCount = Math.min(lines.length, 3);
@@ -86,7 +106,8 @@ export const NoteCard = ({
       className={cn(
         "relative p-2 pb-7 cursor-pointer transition-all duration-200",
         "hover:bg-note-hover hover:shadow-md",
-        isSelected && "bg-note-selected ring-2 ring-primary"
+        isSelected && "bg-note-selected ring-2 ring-primary",
+        isActivated && "ring-2 ring-primary/60 bg-primary/5"
       )}
       onClick={() => {
         onSelect();
@@ -177,15 +198,15 @@ export const NoteCard = ({
             </>
           ) : (
             <>
-              <DropdownMenuItem onClick={onCopy} className="text-xs">
+              <DropdownMenuItem onClick={() => { onCopy(); activateCard(); }} className="text-xs">
                 <Copy className="mr-2 h-3.5 w-3.5" />
                 نسخ
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={onEdit} className="text-xs">
+              <DropdownMenuItem onClick={() => { onEdit(); activateCard(); }} className="text-xs">
                 <Edit2 className="mr-2 h-3.5 w-3.5" />
                 تحرير
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={onTranslate} className="text-xs">
+              <DropdownMenuItem onClick={() => { onTranslate(); activateCard(); }} className="text-xs">
                 <Languages className="mr-2 h-3.5 w-3.5" />
                 ترجمة
               </DropdownMenuItem>
