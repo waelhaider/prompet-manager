@@ -6,6 +6,7 @@ export interface Note {
   content: string;
   board: string;
   images?: string[];
+  createdAt?: string;
 }
 
 export interface DeletedBoard {

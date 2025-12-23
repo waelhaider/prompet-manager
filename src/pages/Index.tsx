@@ -211,7 +211,8 @@ const Index = () => {
         id: Date.now().toString(),
         content: noteContent,
         board: activeBoard,
-        images: pendingImages.length > 0 ? pendingImages : undefined
+        images: pendingImages.length > 0 ? pendingImages : undefined,
+        createdAt: new Date().toISOString()
       };
       setNotes([newNote, ...notes]);
       toast({

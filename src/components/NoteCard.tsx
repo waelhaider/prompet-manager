@@ -27,6 +27,7 @@ interface NoteCardProps {
     content: string;
     board: string;
     images?: string[];
+    createdAt?: string;
   };
   boards: string[];
   isSelected: boolean;
@@ -152,16 +153,24 @@ export const NoteCard = ({
         </div>
       </div>
 
-      <DropdownMenu open={menuOpen} onOpenChange={handleMenuOpenChange}>
-        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute bottom-1.5 left-1.5 h-7 w-7 transition-opacity"
-          >
-            <MoreVertical className="h-3.5 w-3.5" />
-          </Button>
-        </DropdownMenuTrigger>
+      {/* Bottom row: timestamp and menu */}
+      <div className="absolute bottom-1.5 left-1.5 right-1.5 flex items-center justify-between">
+        {note.createdAt && (
+          <span className="text-[10px] text-muted-foreground">
+            {new Date(note.createdAt).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' })} - {new Date(note.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}
+          </span>
+        )}
+        {!note.createdAt && <span />}
+        <DropdownMenu open={menuOpen} onOpenChange={handleMenuOpenChange}>
+          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 transition-opacity"
+            >
+              <MoreVertical className="h-3.5 w-3.5" />
+            </Button>
+          </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
           side="top"
@@ -242,7 +251,8 @@ export const NoteCard = ({
             </>
           )}
         </DropdownMenuContent>
-      </DropdownMenu>
+        </DropdownMenu>
+      </div>
 
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent onClick={(e) => e.stopPropagation()}>
