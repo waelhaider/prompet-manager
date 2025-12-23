@@ -166,7 +166,7 @@ export const NoteCard = ({
           align="start"
           side="top"
           sideOffset={8}
-          className="w-48 bg-popover shadow-lg z-50"
+          className="w-48 bg-dropdown-menu shadow-lg z-50"
           onClick={(e) => e.stopPropagation()}
         >
           {showMoveOptions ? (
