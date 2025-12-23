@@ -824,7 +824,7 @@ const Index = () => {
                 {deletedNotes.map(note => (
                   <div key={note.id} className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-lg w-full">
                     <div className="flex flex-col min-w-0 flex-1">
-                      <span className="truncate" style={{ fontSize: `${fontSize}px` }}>{note.content.substring(0, 30)}...</span>
+                      <span className="line-clamp-2" style={{ fontSize: `${fontSize}px` }}>{note.content.substring(0, 80)}...</span>
                       <span className="text-[10px] text-muted-foreground">من: {note.board}</span>
                     </div>
                     <div className="flex gap-1 shrink-0">
