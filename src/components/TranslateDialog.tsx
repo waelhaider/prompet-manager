@@ -160,16 +160,29 @@ export const TranslateDialog = ({
         
         <div className="space-y-2 sm:space-y-3 mt-2">
           {/* Language Selectors Row */}
-          <div className="grid grid-cols-[1fr_auto_1fr] gap-1 sm:gap-2 items-end">
-            {/* Target Language Selector - Left */}
+          <div dir="rtl" className="grid grid-cols-[1fr_auto_1fr] gap-1 sm:gap-2 items-end">
+            {/* Source Language Selector - Right */}
             <div className="space-y-1">
-              <Label className="text-sm font-semibold block">اللغة المترجمة</Label>
-              <Select value={targetLang} onValueChange={setTargetLang}>
+              <Label className="text-sm font-semibold block">
+                اللغة الأصلية
+                {sourceLang === "auto" && detectedLang && (
+                  <span className="text-xs text-muted-foreground mr-1">
+                    ({getLanguageName(detectedLang)})
+                  </span>
+                )}
+              </Label>
+              <Select
+                value={sourceLang}
+                onValueChange={(val) => {
+                  setSourceLang(val);
+                  if (val !== "auto") setDetectedLang(null);
+                }}
+              >
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {LANGUAGES.filter(l => l.code !== "auto").map((lang) => (
+                  {LANGUAGES.map((lang) => (
                     <SelectItem key={lang.code} value={lang.code}>
                       {lang.name}
                     </SelectItem>
@@ -189,25 +202,15 @@ export const TranslateDialog = ({
               <ArrowLeftRight className="h-4 w-4" />
             </Button>
 
-            {/* Source Language Selector - Right */}
+            {/* Target Language Selector - Left */}
             <div className="space-y-1">
-              <Label className="text-sm font-semibold block">
-                اللغة الأصلية
-                {sourceLang === "auto" && detectedLang && (
-                  <span className="text-xs text-muted-foreground mr-1">
-                    ({getLanguageName(detectedLang)})
-                  </span>
-                )}
-              </Label>
-              <Select value={sourceLang} onValueChange={(val) => {
-                setSourceLang(val);
-                if (val !== "auto") setDetectedLang(null);
-              }}>
+              <Label className="text-sm font-semibold block">اللغة المترجمة</Label>
+              <Select value={targetLang} onValueChange={setTargetLang}>
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {LANGUAGES.map((lang) => (
+                  {LANGUAGES.filter((l) => l.code !== "auto").map((lang) => (
                     <SelectItem key={lang.code} value={lang.code}>
                       {lang.name}
                     </SelectItem>
@@ -218,7 +221,7 @@ export const TranslateDialog = ({
           </div>
 
           {/* Text Areas Row - Side by Side */}
-          <div className="flex flex-row gap-2">
+          <div dir="rtl" className="flex flex-row gap-2">
             {/* Source Text - Right */}
             <div className="flex-1">
               <Label className="text-xs text-muted-foreground mb-1 block">النص الأصلي</Label>
