@@ -147,14 +147,14 @@ const Index = () => {
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-          // Resize to 25% of original dimensions
+          // Resize to 35% of original dimensions
           const canvas = document.createElement('canvas');
-          canvas.width = img.width * 0.25;
-          canvas.height = img.height * 0.25;
+          canvas.width = img.width * 0.35;
+          canvas.height = img.height * 0.35;
           const ctx = canvas.getContext('2d');
           if (ctx) {
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const resizedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+            const resizedBase64 = canvas.toDataURL('image/jpeg', 0.95);
             setPendingImages(prev => [...prev, resizedBase64]);
           }
         };
