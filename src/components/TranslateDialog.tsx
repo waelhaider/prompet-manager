@@ -219,20 +219,7 @@ export const TranslateDialog = ({
 
           {/* Text Areas Row - Side by Side */}
           <div className="grid grid-cols-2 gap-2" style={{ direction: 'ltr' }}>
-            {/* Source Text - Left */}
-            <div>
-              <Label className="text-xs text-muted-foreground mb-1 block">النص الأصلي</Label>
-              <Textarea
-                value={sourceText}
-                onChange={(e) => setSourceText(e.target.value)}
-                className="min-h-[180px] sm:min-h-[220px] max-h-[300px] resize-none text-sm sm:text-base"
-                style={{ fontSize: `${Math.max(fontSize - 2, 12)}px` }}
-                placeholder="اكتب النص هنا..."
-                dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
-              />
-            </div>
-
-            {/* Translated Text - Right */}
+            {/* Translated Text - Left */}
             <div>
               <Label className="text-xs text-muted-foreground mb-1 block">الترجمة</Label>
               {isLoading ? (
@@ -249,6 +236,19 @@ export const TranslateDialog = ({
                   dir={isRTL(targetLang) ? "rtl" : "ltr"}
                 />
               )}
+            </div>
+
+            {/* Source Text - Right */}
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1 block">النص الأصلي</Label>
+              <Textarea
+                value={sourceText}
+                onChange={(e) => setSourceText(e.target.value)}
+                className="min-h-[180px] sm:min-h-[220px] max-h-[300px] resize-none text-sm sm:text-base"
+                style={{ fontSize: `${Math.max(fontSize - 2, 12)}px` }}
+                placeholder="اكتب النص هنا..."
+                dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
+              />
             </div>
           </div>
 
