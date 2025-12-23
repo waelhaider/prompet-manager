@@ -285,11 +285,11 @@ const Index = () => {
     setNoteContent(note.content);
     setPendingImages(note.images || []);
     setHighlightedNoteId(note.id);
-    toast({
+    const t = toast({
       title: "وضع التحرير",
       description: "يمكنك الآن تعديل الملاحظة",
-      duration: 500,
     });
+    window.setTimeout(() => t.dismiss(), 500);
     // Scroll to top where the input box is
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
