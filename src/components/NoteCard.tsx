@@ -122,19 +122,11 @@ export const NoteCard = ({
               {note.content}
             </p>
           ) : (
-            <>
-              {previewLines.map((line, idx) => {
-                const lineDirection = getTextDirection(line);
-                return (
-                  <p key={idx} className="text-foreground leading-relaxed break-words whitespace-pre-wrap line-clamp-1" style={{ fontSize: `${fontSize}px`, direction: lineDirection, textAlign: lineDirection === 'rtl' ? 'right' : 'left' }}>
-                    {line || '\u00A0'}
-                  </p>
-                );
-              })}
-              {hasMore && (
-                <p className="text-muted-foreground text-sm">...</p>
-              )}
-            </>
+            <div className="line-clamp-3">
+              <p className="text-foreground leading-relaxed break-words whitespace-pre-wrap" style={{ fontSize: `${fontSize}px` }}>
+                {note.content}
+              </p>
+            </div>
           )}
         </div>
       </div>
