@@ -154,7 +154,7 @@ const Index = () => {
           const ctx = canvas.getContext('2d');
           if (ctx) {
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const resizedBase64 = canvas.toDataURL('image/jpeg', 0.95);
+            const resizedBase64 = canvas.toDataURL('image/jpeg', 1.0);
             setPendingImages(prev => [...prev, resizedBase64]);
           }
         };
@@ -623,7 +623,7 @@ const Index = () => {
   return <div className="min-h-screen bg-background" dir="rtl">
       <BoardTabs boards={boards} activeBoard={activeBoard} onBoardChange={setActiveBoard} onMenuOpen={() => setMenuOpen(true)} />
 
-      <div className="container max-w-4xl mx-auto p-4 space-y-4">
+      <div className="container max-w-4xl mx-auto px-1 py-4 space-y-4">
         <div className="space-y-3 rounded-md">
           <Textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={editingNote ? Math.max(3, Math.min(15, noteContent.split('\n').length + 1)) : 3} className="resize-none" style={{ fontSize: `${fontSize}px` }} dir={getTextDirection(noteContent)} />
           
