@@ -159,7 +159,7 @@ export const NoteCard = ({
       </div>
 
       {/* Bottom row: timestamp and menu */}
-      <div className="absolute bottom-1.5 left-1.5 right-1.5 flex items-center justify-between">
+      <div className="absolute bottom-0.5 left-1.5 right-1.5 flex items-center justify-between">
         {note.createdAt && (
           <span className="text-[10px] text-muted-foreground">
             {new Date(note.createdAt).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })} 🕒 {new Date(note.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
