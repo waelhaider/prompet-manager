@@ -126,8 +126,8 @@ export const NoteCard = ({
                 alt={`صورة ${idx + 1}`} 
                 className="object-cover cursor-pointer hover:opacity-80 transition-opacity"
                 style={{
-                  width: '40px',
-                  height: '40px',
+                  width: '60px',
+                  height: '60px',
                   border: '2px solid rgb(221, 221, 221)',
                   borderRadius: '8px',
                   boxShadow: 'rgba(0, 0, 0, 0.5) 0px 2px 4px'
