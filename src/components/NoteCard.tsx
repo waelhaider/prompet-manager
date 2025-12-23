@@ -124,7 +124,12 @@ export const NoteCard = ({
                 key={idx}
                 src={img} 
                 alt={`صورة ${idx + 1}`} 
-                className="w-[60px] h-[60px] object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
+                className="w-[60px] h-[60px] object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                style={{
+                  boxShadow: 'rgba(0, 0, 0, 0.5) 0px 2px 4px',
+                  borderRadius: '8px',
+                  border: '2px solid rgb(221, 221, 221)'
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
                   onImageClick?.(img);
