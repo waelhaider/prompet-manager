@@ -267,12 +267,10 @@ export const TranslateDialog = ({
               <Copy className="h-3 w-3 ml-1" />
               <span className="hidden xs:inline">نسخ</span> الترجمة
             </Button>
-
             {onSaveTranslation && (
               <Button
                 size="sm"
-                variant="secondary"
-                className="h-8 text-xs sm:text-sm flex-1 sm:flex-none"
+                className="h-8 text-xs sm:text-sm flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white"
                 onClick={handleSaveTranslation}
                 disabled={!translatedText}
               >
