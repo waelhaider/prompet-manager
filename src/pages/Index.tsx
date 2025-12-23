@@ -790,7 +790,7 @@ const Index = () => {
       />
 
       <Dialog open={restoreOpen} onOpenChange={setRestoreOpen}>
-        <DialogContent className="bg-popover max-h-[80vh] overflow-y-auto rounded-2xl">
+        <DialogContent className="bg-popover max-h-[80vh] overflow-y-auto rounded-2xl w-[99%] max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
               <span>المحذوفات</span>
