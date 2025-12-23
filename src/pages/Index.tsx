@@ -78,49 +78,53 @@ const Index = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Track if we have a history state pushed for dialogs
+  const hasHistoryState = useRef(false);
+
   // Handle back button/gesture to close dialogs instead of navigating away
   useEffect(() => {
     const anyDialogOpen = menuOpen || reorderOpen || addBoardOpen || editBoardOpen || 
-      deleteBoardOpen || restoreOpen || translateOpen || viewingImage || 
-      confirmDeleteNoteId || confirmDeleteBoardName;
+      deleteBoardOpen || restoreOpen || translateOpen || !!viewingImage || 
+      !!confirmDeleteNoteId || !!confirmDeleteBoardName;
 
-    if (anyDialogOpen) {
-      // Push a state when dialog opens
+    if (anyDialogOpen && !hasHistoryState.current) {
+      // Push a single state when first dialog opens
       window.history.pushState({ dialogOpen: true }, '');
+      hasHistoryState.current = true;
+    } else if (!anyDialogOpen && hasHistoryState.current) {
+      // When all dialogs are closed normally (not via back), go back to remove the history entry
+      window.history.back();
+      hasHistoryState.current = false;
     }
+  }, [menuOpen, reorderOpen, addBoardOpen, editBoardOpen, deleteBoardOpen, 
+      restoreOpen, translateOpen, viewingImage, confirmDeleteNoteId, confirmDeleteBoardName]);
 
+  useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
+      // Mark that we no longer have a history state
+      hasHistoryState.current = false;
+      
       // Close dialogs in order of priority
       if (viewingImage) {
         setViewingImage(null);
-        event.preventDefault();
       } else if (translateOpen) {
         setTranslateOpen(false);
-        event.preventDefault();
       } else if (confirmDeleteNoteId) {
         setConfirmDeleteNoteId(null);
-        event.preventDefault();
       } else if (confirmDeleteBoardName) {
         setConfirmDeleteBoardName(null);
-        event.preventDefault();
       } else if (deleteBoardOpen) {
         setDeleteBoardOpen(false);
-        event.preventDefault();
       } else if (editBoardOpen) {
         setEditBoardOpen(false);
-        event.preventDefault();
       } else if (addBoardOpen) {
         setAddBoardOpen(false);
-        event.preventDefault();
       } else if (restoreOpen) {
         setRestoreOpen(false);
-        event.preventDefault();
       } else if (reorderOpen) {
         setReorderOpen(false);
-        event.preventDefault();
       } else if (menuOpen) {
         setMenuOpen(false);
-        event.preventDefault();
       }
     };
 
