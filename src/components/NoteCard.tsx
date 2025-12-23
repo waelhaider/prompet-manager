@@ -105,9 +105,9 @@ export const NoteCard = ({
     <Card
       className={cn(
         "relative p-2 pb-7 cursor-pointer transition-all duration-200",
-        "hover:bg-note-hover hover:shadow-md",
-        isSelected && "bg-note-selected ring-2 ring-primary",
-        isActivated && "ring-2 ring-primary/60 bg-primary/5"
+        "shadow-sm hover:shadow-lg hover:bg-note-hover",
+        isSelected && "bg-note-selected ring-2 ring-primary shadow-md",
+        isActivated && "ring-2 ring-primary/60 bg-primary/5 shadow-md"
       )}
       onClick={() => {
         onSelect();
