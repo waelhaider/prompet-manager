@@ -10,6 +10,16 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface NoteCardProps {
   note: {
@@ -46,6 +56,7 @@ export const NoteCard = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showMoveOptions, setShowMoveOptions] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const lines = note.content.split('\n');
   const previewLines = lines.slice(0, 3);
@@ -178,7 +189,14 @@ export const NoteCard = ({
                 <Copy className="mr-2 h-3.5 w-3.5" />
                 نسخ
               </DropdownMenuItem>
-
+              <DropdownMenuItem onClick={onEdit} className="text-xs">
+                <Edit2 className="mr-2 h-3.5 w-3.5" />
+                تحرير
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onTranslate} className="text-xs">
+                <Languages className="mr-2 h-3.5 w-3.5" />
+                ترجمة
+              </DropdownMenuItem>
               <DropdownMenuItem
                 disabled={availableBoards.length === 0}
                 onSelect={(e) => {
@@ -198,15 +216,13 @@ export const NoteCard = ({
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem onClick={onEdit} className="text-xs">
-                <Edit2 className="mr-2 h-3.5 w-3.5" />
-                تحرير
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={onTranslate} className="text-xs">
-                <Languages className="mr-2 h-3.5 w-3.5" />
-                ترجمة
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={onDelete} className="text-destructive text-xs">
+              <DropdownMenuItem 
+                onClick={() => {
+                  setMenuOpen(false);
+                  setShowDeleteConfirm(true);
+                }} 
+                className="text-destructive text-xs"
+              >
                 <Trash2 className="mr-2 h-3.5 w-3.5" />
                 حذف
               </DropdownMenuItem>
@@ -214,6 +230,26 @@ export const NoteCard = ({
           )}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من حذف هذه الملاحظة؟ لا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-row-reverse gap-2">
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={onDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              حذف
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };
