@@ -277,7 +277,7 @@ export const TranslateDialog = ({
                 disabled={!translatedText}
               >
                 <Save className="h-3 w-3 ml-1" />
-                حفظ
+                حفظ تعديلات الترجمة
               </Button>
             )}
 
