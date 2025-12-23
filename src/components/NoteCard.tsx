@@ -116,7 +116,7 @@ export const NoteCard = ({
         )}
         
         {/* Text on the right */}
-        <div className="flex-1 min-w-0 overflow-hidden" style={{ maxHeight: isExpanded ? 'none' : '4.5em', direction: textDirection, textAlign: textDirection === 'rtl' ? 'right' : 'left' }}>
+        <div className="flex-1 min-w-0 overflow-hidden" style={{ height: isExpanded ? 'auto' : '4.5em', minHeight: '4.5em', direction: textDirection, textAlign: textDirection === 'rtl' ? 'right' : 'left' }}>
           {isExpanded ? (
             <p className="whitespace-pre-wrap text-foreground leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
               {note.content}
