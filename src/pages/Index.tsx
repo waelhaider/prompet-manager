@@ -822,19 +822,19 @@ const Index = () => {
             ) : (
               <div className="max-h-40 overflow-y-auto space-y-1">
                 {deletedNotes.map(note => (
-                  <div key={note.id} className="flex flex-col p-2 bg-muted/50 rounded-lg gap-1 w-[99%]">
-                    <div className="flex items-center justify-between gap-1 w-full">
-                      <span className="truncate flex-1 min-w-0" style={{ fontSize: `${fontSize}px` }}>{note.content.substring(0, 50)}...</span>
-                      <div className="flex gap-1 shrink-0">
-                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => restoreNote(note.id)}>
-                          استعادة
-                        </Button>
-                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-destructive hover:text-destructive" onClick={() => setConfirmDeleteNoteId(note.id)}>
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
+                  <div key={note.id} className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-lg w-full">
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <span className="truncate" style={{ fontSize: `${fontSize}px` }}>{note.content.substring(0, 30)}...</span>
+                      <span className="text-[10px] text-muted-foreground">من: {note.board}</span>
                     </div>
-                    <span className="text-[10px] text-muted-foreground">محذوفة من: {note.board}</span>
+                    <div className="flex gap-1 shrink-0">
+                      <Button size="sm" variant="ghost" className="h-6 px-1.5 text-[10px]" onClick={() => restoreNote(note.id)}>
+                        استعادة
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-destructive hover:text-destructive" onClick={() => setConfirmDeleteNoteId(note.id)}>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
