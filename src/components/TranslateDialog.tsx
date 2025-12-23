@@ -153,7 +153,7 @@ export const TranslateDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[99vw] max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
+      <DialogContent className="w-[99vw] max-w-4xl max-h-[95vh] overflow-y-auto p-3 sm:p-6 mt-5">
         <DialogHeader>
           <DialogTitle className="text-base sm:text-lg">ترجمة النص</DialogTitle>
         </DialogHeader>
@@ -228,7 +228,7 @@ export const TranslateDialog = ({
               <Textarea
                 value={sourceText}
                 onChange={(e) => setSourceText(e.target.value)}
-                className="min-h-[180px] sm:min-h-[220px] max-h-[300px] resize-none text-sm sm:text-base"
+                className="min-h-[280px] sm:min-h-[350px] max-h-[450px] resize-none text-sm sm:text-base"
                 style={{ fontSize: `${Math.max(fontSize - 2, 12)}px` }}
                 placeholder="اكتب النص هنا..."
                 dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
@@ -239,14 +239,14 @@ export const TranslateDialog = ({
             <div className="flex-1">
               <Label className="text-xs text-muted-foreground mb-1 block">الترجمة</Label>
               {isLoading ? (
-                <div className="flex items-center justify-center min-h-[180px] sm:min-h-[220px] border rounded-md bg-muted">
+                <div className="flex items-center justify-center min-h-[280px] sm:min-h-[350px] border rounded-md bg-muted">
                   <Loader2 className="h-5 w-5 animate-spin text-primary" />
                 </div>
               ) : (
                 <Textarea
                   value={translatedText}
                   onChange={(e) => setTranslatedText(e.target.value)}
-                  className="min-h-[180px] sm:min-h-[220px] max-h-[300px] resize-none text-sm sm:text-base"
+                  className="min-h-[280px] sm:min-h-[350px] max-h-[450px] resize-none text-sm sm:text-base"
                   style={{ fontSize: `${Math.max(fontSize - 2, 12)}px` }}
                   placeholder="الترجمة ستظهر هنا..."
                   dir={isRTL(targetLang) ? "rtl" : "ltr"}
