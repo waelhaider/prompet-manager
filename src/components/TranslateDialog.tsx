@@ -256,37 +256,36 @@ export const TranslateDialog = ({
           </div>
 
           {/* Action Buttons Row */}
-          <div className="flex flex-wrap gap-2 justify-center sm:grid sm:grid-cols-[1fr_auto_1fr] sm:gap-1 sm:items-center">
+          <div className="flex flex-row gap-1.5 justify-center flex-nowrap">
             <Button
               variant="outline"
               size="sm"
-              className="h-8 text-xs sm:text-sm flex-1 sm:flex-none"
+              className="h-8 text-xs px-2 whitespace-nowrap"
               onClick={() => copyToClipboard(translatedText, "الترجمة")}
               disabled={!translatedText}
             >
-              <Copy className="h-3 w-3 ml-1" />
-              <span className="hidden xs:inline">نسخ</span> الترجمة
+              <Copy className="h-3 w-3 ml-1 flex-shrink-0" />
+              <span className="truncate">نسخ الترجمة</span>
             </Button>
             {onSaveTranslation && (
               <Button
                 size="sm"
-                className="h-8 text-xs sm:text-sm flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white"
+                className="h-8 text-xs px-2 whitespace-nowrap bg-green-600 hover:bg-green-700 text-white"
                 onClick={handleSaveTranslation}
                 disabled={!translatedText}
               >
-                <Save className="h-3 w-3 ml-1" />
-                حفظ تعديلات الترجمة
+                <Save className="h-3 w-3 ml-1 flex-shrink-0" />
+                <span className="truncate">حفظ الترجمة</span>
               </Button>
             )}
-
             <Button
               variant="outline"
               size="sm"
-              className="h-8 text-xs sm:text-sm flex-1 sm:flex-none"
+              className="h-8 text-xs px-2 whitespace-nowrap"
               onClick={() => copyToClipboard(sourceText, "النص الأصلي")}
             >
-              <Copy className="h-3 w-3 ml-1" />
-              <span className="hidden xs:inline">نسخ</span> الأصلي
+              <Copy className="h-3 w-3 ml-1 flex-shrink-0" />
+              <span className="truncate">نسخ الأصلي</span>
             </Button>
           </div>
         </div>
