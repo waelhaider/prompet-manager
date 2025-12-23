@@ -713,7 +713,7 @@ const Index = () => {
       {showScrollTop && (
         <Button
           onClick={scrollToTop}
-          className="fixed bottom-6 left-6 z-50 rounded-full shadow-lg animate-fade-in"
+          className="fixed bottom-6 right-6 z-50 rounded-full shadow-lg animate-fade-in"
           size="icon"
           variant="secondary"
         >
