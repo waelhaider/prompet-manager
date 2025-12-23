@@ -215,7 +215,8 @@ const Index = () => {
       setNotes([newNote, ...notes]);
       toast({
         title: "تم الحفظ",
-        description: "تم حفظ الملاحظة بنجاح"
+        description: "تم حفظ الملاحظة بنجاح",
+        duration: 1000,
       });
     }
     setNoteContent("");
@@ -263,7 +264,8 @@ const Index = () => {
     setConfirmDeleteNoteId(null);
     toast({
       title: "تم الحذف نهائياً",
-      description: "تم حذف الملاحظة نهائياً"
+      description: "تم حذف الملاحظة نهائياً",
+      duration: 1000,
     });
   };
 
@@ -273,7 +275,8 @@ const Index = () => {
     setConfirmDeleteBoardName(null);
     toast({
       title: "تم الحذف نهائياً",
-      description: "تم حذف اللوحة وملاحظاتها نهائياً"
+      description: "تم حذف اللوحة وملاحظاتها نهائياً",
+      duration: 1000,
     });
   };
   const editNote = (note: Note) => {
@@ -296,7 +299,8 @@ const Index = () => {
     } : n));
     toast({
       title: "تم النقل",
-      description: `تم نقل الملاحظة إلى ${targetBoardName}`
+      description: `تم نقل الملاحظة إلى ${targetBoardName}`,
+      duration: 1000,
     });
   };
   const translateNote = (note: Note) => {
