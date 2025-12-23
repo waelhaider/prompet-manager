@@ -145,8 +145,11 @@ export const NoteCard = ({
         >
           {showMoveOptions ? (
             <>
-              <DropdownMenuItem 
-                onClick={() => setShowMoveOptions(false)} 
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setShowMoveOptions(false);
+                }}
                 className="text-xs font-medium"
               >
                 <ChevronLeft className="mr-2 h-3.5 w-3.5" />
@@ -181,17 +184,20 @@ export const NoteCard = ({
                 <Languages className="mr-2 h-3.5 w-3.5" />
                 ترجمة
               </DropdownMenuItem>
-              {availableBoards.length > 0 && (
-                <DropdownMenuItem 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowMoveOptions(true);
-                  }} 
-                  className="text-xs"
-                >
-                  <ArrowRight className="mr-2 h-3.5 w-3.5" />
-                  نقل إلى
+              <DropdownMenuItem
+                disabled={availableBoards.length === 0}
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setShowMoveOptions(true);
+                }}
+                className="text-xs"
+              >
+                <ArrowRight className="mr-2 h-3.5 w-3.5" />
+                نقل إلى
+              </DropdownMenuItem>
+              {availableBoards.length === 0 && (
+                <DropdownMenuItem disabled className="text-xs">
+                  لا توجد لوحات أخرى
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem onClick={onDelete} className="text-destructive text-xs">
