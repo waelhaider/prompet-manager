@@ -822,10 +822,10 @@ const Index = () => {
             ) : (
               <div className="max-h-40 overflow-y-auto space-y-1">
                 {deletedNotes.map(note => (
-                  <div key={note.id} className="flex flex-col p-2 bg-muted/50 rounded-lg gap-1">
-                    <div className="flex items-center justify-between">
-                      <span className="truncate flex-1 ml-2" style={{ fontSize: `${fontSize}px` }}>{note.content.substring(0, 50)}...</span>
-                      <div className="flex gap-1">
+                  <div key={note.id} className="flex flex-col p-2 bg-muted/50 rounded-lg gap-1 w-[99%]">
+                    <div className="flex items-center justify-between gap-1 w-full">
+                      <span className="truncate flex-1 min-w-0" style={{ fontSize: `${fontSize}px` }}>{note.content.substring(0, 50)}...</span>
+                      <div className="flex gap-1 shrink-0">
                         <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => restoreNote(note.id)}>
                           استعادة
                         </Button>
