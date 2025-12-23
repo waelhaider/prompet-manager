@@ -218,9 +218,22 @@ export const TranslateDialog = ({
           </div>
 
           {/* Text Areas Row - Side by Side */}
-          <div className="grid grid-cols-2 gap-2" style={{ direction: 'ltr' }}>
+          <div className="flex flex-row gap-2">
+            {/* Source Text - Right */}
+            <div className="flex-1">
+              <Label className="text-xs text-muted-foreground mb-1 block">النص الأصلي</Label>
+              <Textarea
+                value={sourceText}
+                onChange={(e) => setSourceText(e.target.value)}
+                className="min-h-[180px] sm:min-h-[220px] max-h-[300px] resize-none text-sm sm:text-base"
+                style={{ fontSize: `${Math.max(fontSize - 2, 12)}px` }}
+                placeholder="اكتب النص هنا..."
+                dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
+              />
+            </div>
+
             {/* Translated Text - Left */}
-            <div>
+            <div className="flex-1">
               <Label className="text-xs text-muted-foreground mb-1 block">الترجمة</Label>
               {isLoading ? (
                 <div className="flex items-center justify-center min-h-[180px] sm:min-h-[220px] border rounded-md bg-muted">
@@ -236,19 +249,6 @@ export const TranslateDialog = ({
                   dir={isRTL(targetLang) ? "rtl" : "ltr"}
                 />
               )}
-            </div>
-
-            {/* Source Text - Right */}
-            <div>
-              <Label className="text-xs text-muted-foreground mb-1 block">النص الأصلي</Label>
-              <Textarea
-                value={sourceText}
-                onChange={(e) => setSourceText(e.target.value)}
-                className="min-h-[180px] sm:min-h-[220px] max-h-[300px] resize-none text-sm sm:text-base"
-                style={{ fontSize: `${Math.max(fontSize - 2, 12)}px` }}
-                placeholder="اكتب النص هنا..."
-                dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
-              />
             </div>
           </div>
 
