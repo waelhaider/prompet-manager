@@ -254,7 +254,8 @@ const Index = () => {
       setDeletedNotes(deletedNotes.filter(n => n.id !== noteId));
       toast({
         title: "تمت الاستعادة",
-        description: `تم استعادة الملاحظة إلى ${targetBoardName}`
+        description: `تم استعادة الملاحظة إلى ${targetBoardName}`,
+        duration: 1000,
       });
     }
   };
@@ -815,18 +816,21 @@ const Index = () => {
                 لا توجد ملاحظات محذوفة
               </p>
             ) : (
-              <div className="max-h-32 overflow-y-auto space-y-1">
+              <div className="max-h-40 overflow-y-auto space-y-1">
                 {deletedNotes.map(note => (
-                  <div key={note.id} className="flex items-center justify-between p-2 bg-muted rounded text-xs">
-                    <span className="truncate flex-1 ml-2">{note.content.substring(0, 50)}...</span>
-                    <div className="flex gap-1">
-                      <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => restoreNote(note.id)}>
-                        استعادة
-                      </Button>
-                      <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-destructive hover:text-destructive" onClick={() => setConfirmDeleteNoteId(note.id)}>
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
+                  <div key={note.id} className="flex flex-col p-2 bg-muted rounded text-xs gap-1">
+                    <div className="flex items-center justify-between">
+                      <span className="truncate flex-1 ml-2">{note.content.substring(0, 50)}...</span>
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => restoreNote(note.id)}>
+                          استعادة
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-destructive hover:text-destructive" onClick={() => setConfirmDeleteNoteId(note.id)}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
+                    <span className="text-[10px] text-muted-foreground">محذوفة من: {note.board}</span>
                   </div>
                 ))}
               </div>
