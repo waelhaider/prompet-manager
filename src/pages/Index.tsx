@@ -638,11 +638,11 @@ const Index = () => {
 
       <div className="container max-w-4xl mx-auto px-1 py-2 space-y-2">
         <div className="space-y-1.5 rounded-md">
-          <Textarea ref={textareaRef} value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={editingNote ? Math.max(3, Math.min(15, noteContent.split('\n').length + 1)) : 3} className="resize-none" style={{ fontSize: `${fontSize}px` }} dir={getTextDirection(noteContent)} />
+          <Textarea ref={textareaRef} value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={editingNote ? Math.max(5, Math.min(15, noteContent.split('\n').length + 1)) : 3} className="resize-none" style={{ fontSize: `${fontSize}px`, minHeight: editingNote ? '120px' : undefined }} dir={getTextDirection(noteContent)} />
           
           {/* Pending Images Preview */}
           {pendingImages.length > 0 && (
-            <div className="flex flex-wrap gap-2 p-2 bg-muted rounded-md">
+            <div className="flex flex-wrap gap-2 p-2 bg-accent/50 rounded-md">
               {pendingImages.map((img, index) => (
                 <div key={index} className="relative">
                   <img 
