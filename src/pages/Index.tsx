@@ -329,7 +329,7 @@ const Index = () => {
     if ('showSaveFilePicker' in window) {
       try {
         const handle = await (window as any).showSaveFilePicker({
-          suggestedName: `notes-backup-${new Date().toISOString().split('T')[0]}.json`,
+          suggestedName: `pic-manager-backup-${new Date().toISOString().split('T')[0]}.json`,
           types: [{
             description: 'JSON Files',
             accept: { 'application/json': ['.json'] }
@@ -352,7 +352,7 @@ const Index = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `notes-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `pic-manager-backup-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast({
