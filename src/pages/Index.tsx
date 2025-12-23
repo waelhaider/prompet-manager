@@ -288,7 +288,7 @@ const Index = () => {
     toast({
       title: "وضع التحرير",
       description: "يمكنك الآن تعديل الملاحظة",
-      duration: 1000,
+      duration: 500,
     });
     // Scroll to top where the input box is
     window.scrollTo({ top: 0, behavior: 'smooth' });
