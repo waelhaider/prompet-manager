@@ -59,7 +59,7 @@ export const NoteCard = ({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const lines = note.content.split('\n');
-  const previewLines = lines.slice(0, 3);
+  const lineCount = Math.min(lines.length, 3);
   const hasMore = lines.length > 3 || (note.images && note.images.length > 0);
 
   // Detect text direction based on majority of characters
@@ -116,7 +116,7 @@ export const NoteCard = ({
         )}
         
         {/* Text on the right */}
-        <div className="flex-1 min-w-0 overflow-hidden" style={{ height: isExpanded ? 'auto' : '4.5em', minHeight: '4.5em', direction: textDirection, textAlign: textDirection === 'rtl' ? 'right' : 'left' }}>
+        <div className="flex-1 min-w-0 overflow-hidden" style={{ height: isExpanded ? 'auto' : undefined, minHeight: isExpanded ? undefined : `${lineCount * 1.5}em`, maxHeight: isExpanded ? undefined : '4.5em', direction: textDirection, textAlign: textDirection === 'rtl' ? 'right' : 'left' }}>
           {isExpanded ? (
             <p className="whitespace-pre-wrap text-foreground leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
               {note.content}
