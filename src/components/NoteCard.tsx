@@ -118,24 +118,13 @@ export const NoteCard = ({
       <div className="flex gap-2 items-start">
         {/* Images on the left */}
         {note.images && note.images.length > 0 && (
-          <div className="flex-shrink-0 flex flex-wrap gap-1 content-start" style={{ maxWidth: '120px' }}>
+          <div className="flex-shrink-0 grid grid-cols-2 gap-0.5 content-start" style={{ width: '88px' }}>
             {(isExpanded ? note.images : note.images.slice(0, 4)).map((img, idx) => (
               <img 
                 key={idx}
                 src={img} 
                 alt={`صورة ${idx + 1}`} 
-                className="cursor-pointer hover:opacity-80 transition-opacity"
-                style={{
-                  width: 'auto',
-                  height: 'auto',
-                  transform: 'scale(0.45)',
-                  transformOrigin: 'top left',
-                  border: '2px solid rgb(221, 221, 221)',
-                  borderRadius: '8px',
-                  boxShadow: 'rgba(0, 0, 0, 0.5) 0px 2px 4px',
-                  maxWidth: '100px',
-                  maxHeight: '100px'
-                }}
+                className="w-10 h-10 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={(e) => {
                   e.stopPropagation();
                   onImageClick?.(img);
