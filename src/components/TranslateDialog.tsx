@@ -218,7 +218,7 @@ export const TranslateDialog = ({
           </div>
 
           {/* Text Areas Row - Side by Side */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2" style={{ direction: 'ltr' }}>
             {/* Source Text - Left */}
             <div>
               <Label className="text-xs text-muted-foreground mb-1 block">النص الأصلي</Label>
