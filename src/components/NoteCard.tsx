@@ -176,7 +176,7 @@ export const NoteCard = ({
                   e.preventDefault();
                   setShowMoveOptions(false);
                 }}
-                className="text-xs font-medium"
+                className="text-sm font-medium"
               >
                 <ChevronLeft className="mr-2 h-3.5 w-3.5" />
                 رجوع
@@ -185,7 +185,7 @@ export const NoteCard = ({
               {availableBoards.map(board => (
                 <DropdownMenuItem
                   key={board}
-                  className="text-xs"
+                  className="text-sm"
                   onClick={() => {
                     onMoveTo(board);
                     setMenuOpen(false);
@@ -198,15 +198,15 @@ export const NoteCard = ({
             </>
           ) : (
             <>
-              <DropdownMenuItem onClick={() => { onCopy(); activateCard(); }} className="text-xs">
+              <DropdownMenuItem onClick={() => { onCopy(); activateCard(); }} className="text-sm">
                 <Copy className="mr-2 h-3.5 w-3.5" />
                 نسخ
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => { onEdit(); activateCard(); }} className="text-xs">
+              <DropdownMenuItem onClick={() => { onEdit(); activateCard(); }} className="text-sm">
                 <Edit2 className="mr-2 h-3.5 w-3.5" />
                 تحرير
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => { onTranslate(); activateCard(); }} className="text-xs">
+              <DropdownMenuItem onClick={() => { onTranslate(); activateCard(); }} className="text-sm">
                 <Languages className="mr-2 h-3.5 w-3.5" />
                 ترجمة
               </DropdownMenuItem>
@@ -216,13 +216,13 @@ export const NoteCard = ({
                   e.preventDefault();
                   setShowMoveOptions(true);
                 }}
-                className="text-xs"
+                className="text-sm"
               >
                 <ArrowRight className="mr-2 h-3.5 w-3.5" />
                 نقل إلى
               </DropdownMenuItem>
               {availableBoards.length === 0 && (
-                <DropdownMenuItem disabled className="text-xs">
+                <DropdownMenuItem disabled className="text-sm">
                   لا توجد لوحات أخرى
                 </DropdownMenuItem>
               )}
@@ -234,7 +234,7 @@ export const NoteCard = ({
                   setMenuOpen(false);
                   setShowDeleteConfirm(true);
                 }} 
-                className="text-destructive text-xs"
+                className="text-destructive text-sm"
               >
                 <Trash2 className="mr-2 h-3.5 w-3.5" />
                 حذف
