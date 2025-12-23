@@ -17,8 +17,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {
-        name: "مدير الملاحظات",
-        short_name: "ملاحظاتي",
+        name: "pic-manager",
+        short_name: "pic-manager",
         description: "تطبيق إدارة ملاحظات متقدم مع لوحات منظمة وميزات متعددة",
         theme_color: "#1a1a2e",
         background_color: "#1a1a2e",
