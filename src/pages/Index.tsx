@@ -51,6 +51,7 @@ const Index = () => {
   const [viewingImage, setViewingImage] = useState<string | null>(null);
   const [highlightedNoteId, setHighlightedNoteId] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [confirmClearAll, setConfirmClearAll] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const notesContainerRef = useRef<HTMLDivElement>(null);
   const {
@@ -786,7 +787,20 @@ const Index = () => {
       <Dialog open={restoreOpen} onOpenChange={setRestoreOpen}>
         <DialogContent className="bg-popover max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>المحذوفات</DialogTitle>
+            <DialogTitle className="flex items-center justify-between">
+              <span>المحذوفات</span>
+              {(deletedNotes.length > 0 || deletedBoards.length > 0) && (
+                <Button 
+                  size="sm" 
+                  variant="destructive" 
+                  className="h-7 text-xs"
+                  onClick={() => setConfirmClearAll(true)}
+                >
+                  <Trash2 className="h-3 w-3 ml-1" />
+                  إفراغ الكل
+                </Button>
+              )}
+            </DialogTitle>
           </DialogHeader>
           
           {/* Deleted Notes Section */}
@@ -899,7 +913,36 @@ const Index = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Image Viewer Dialog */}
+      {/* Confirm Clear All Dialog */}
+      <AlertDialog open={confirmClearAll} onOpenChange={setConfirmClearAll}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد إفراغ المحذوفات</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من حذف جميع الملاحظات واللوحات المحذوفة نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                setDeletedNotes([]);
+                setDeletedBoards([]);
+                setConfirmClearAll(false);
+                toast({
+                  title: "تم الإفراغ",
+                  description: "تم حذف جميع المحذوفات نهائياً",
+                  duration: 1000,
+                });
+              }} 
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              إفراغ الكل
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Dialog open={!!viewingImage} onOpenChange={(open) => !open && setViewingImage(null)}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] p-1 overflow-hidden">
           {viewingImage && (
