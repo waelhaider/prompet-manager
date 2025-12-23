@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -957,25 +958,26 @@ const Index = () => {
       </AlertDialog>
 
       <Dialog open={!!viewingImage} onOpenChange={(open) => !open && setViewingImage(null)}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-1 overflow-hidden">
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-1 overflow-hidden flex items-center justify-center">
           {viewingImage && (
-            <div 
-              className="w-full h-full overflow-auto touch-pinch-zoom"
-              style={{ 
-                WebkitOverflowScrolling: 'touch',
-                touchAction: 'pinch-zoom pan-x pan-y'
-              }}
+            <TransformWrapper
+              initialScale={1}
+              minScale={0.5}
+              maxScale={5}
+              doubleClick={{ mode: "toggle" }}
+              pinch={{ step: 5 }}
             >
-              <img 
-                src={viewingImage} 
-                alt="صورة مكبرة" 
-                className="w-full h-auto max-h-[90vh] object-contain select-none"
-                style={{ 
-                  touchAction: 'pinch-zoom pan-x pan-y',
-                  transformOrigin: 'center center'
-                }}
-              />
-            </div>
+              <TransformComponent
+                wrapperStyle={{ width: '100%', height: '100%' }}
+                contentStyle={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <img 
+                  src={viewingImage} 
+                  alt="صورة مكبرة" 
+                  className="max-w-full max-h-[85vh] object-contain select-none"
+                />
+              </TransformComponent>
+            </TransformWrapper>
           )}
         </DialogContent>
       </Dialog>
