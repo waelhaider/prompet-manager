@@ -140,7 +140,9 @@ export const NoteCard = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
-          className="w-44 bg-popover shadow-lg z-50"
+          side="top"
+          sideOffset={8}
+          className="w-48 bg-popover shadow-lg z-50"
           onClick={(e) => e.stopPropagation()}
         >
           {showMoveOptions ? (
@@ -176,14 +178,7 @@ export const NoteCard = ({
                 <Copy className="mr-2 h-3.5 w-3.5" />
                 نسخ
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={onEdit} className="text-xs">
-                <Edit2 className="mr-2 h-3.5 w-3.5" />
-                تحرير
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={onTranslate} className="text-xs">
-                <Languages className="mr-2 h-3.5 w-3.5" />
-                ترجمة
-              </DropdownMenuItem>
+
               <DropdownMenuItem
                 disabled={availableBoards.length === 0}
                 onSelect={(e) => {
@@ -200,6 +195,17 @@ export const NoteCard = ({
                   لا توجد لوحات أخرى
                 </DropdownMenuItem>
               )}
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem onClick={onEdit} className="text-xs">
+                <Edit2 className="mr-2 h-3.5 w-3.5" />
+                تحرير
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onTranslate} className="text-xs">
+                <Languages className="mr-2 h-3.5 w-3.5" />
+                ترجمة
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={onDelete} className="text-destructive text-xs">
                 <Trash2 className="mr-2 h-3.5 w-3.5" />
                 حذف
