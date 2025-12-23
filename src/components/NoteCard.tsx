@@ -118,26 +118,28 @@ export const NoteCard = ({
       <div className="flex gap-2 items-start">
         {/* Images on the left */}
         {note.images && note.images.length > 0 && (
-          <div className="flex-shrink-0 grid grid-cols-2 gap-0.5 content-start" style={{ width: '124px' }}>
-            {(isExpanded ? note.images : note.images.slice(0, 4)).map((img, idx) => (
-              <img 
-                key={idx}
-                src={img} 
-                alt={`صورة ${idx + 1}`} 
-                className="w-[60px] h-[60px] object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                style={{
-                  boxShadow: 'rgba(0, 0, 0, 0.5) 0px 2px 4px',
-                  borderRadius: '8px',
-                  border: '2px solid rgb(221, 221, 221)'
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onImageClick?.(img);
-                }}
-              />
-            ))}
-            {!isExpanded && note.images.length > 4 && (
-              <span className="text-xs text-muted-foreground flex items-center justify-center">+{note.images.length - 4}</span>
+          <div className="flex-shrink-0 flex flex-col gap-0.5" style={{ width: '124px' }}>
+            <div className="grid grid-cols-2 gap-0.5">
+              {(isExpanded ? note.images : note.images.slice(0, 2)).map((img, idx) => (
+                <img 
+                  key={idx}
+                  src={img} 
+                  alt={`صورة ${idx + 1}`} 
+                  className="w-[60px] h-[60px] object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                  style={{
+                    boxShadow: 'rgba(0, 0, 0, 0.5) 0px 2px 4px',
+                    borderRadius: '8px',
+                    border: '2px solid rgb(221, 221, 221)'
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onImageClick?.(img);
+                  }}
+                />
+              ))}
+            </div>
+            {!isExpanded && note.images.length > 2 && (
+              <span className="text-xs text-muted-foreground text-center">+{note.images.length - 2} صور</span>
             )}
           </div>
         )}
