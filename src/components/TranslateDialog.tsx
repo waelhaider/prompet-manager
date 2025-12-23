@@ -153,14 +153,14 @@ export const TranslateDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-lg">ترجمة النص</DialogTitle>
+          <DialogTitle className="text-base sm:text-lg">ترجمة النص</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-3 mt-2">
+        <div className="space-y-2 sm:space-y-3 mt-2">
           {/* Language Selectors Row */}
-          <div className="grid grid-cols-[1fr_auto_1fr] gap-1 items-end">
+          <div className="grid grid-cols-[1fr_auto_1fr] gap-1 sm:gap-2 items-end">
             {/* Target Language Selector - Left */}
             <div className="space-y-1">
               <Label className="text-sm font-semibold block">اللغة المترجمة</Label>
@@ -218,68 +218,72 @@ export const TranslateDialog = ({
           </div>
 
           {/* Text Areas Row */}
-          <div className="grid grid-cols-2 gap-1">
-            {/* Translated Text - Left */}
-            {isLoading ? (
-              <div className="flex items-center justify-center min-h-[180px] border rounded-md bg-muted">
-                <Loader2 className="h-5 w-5 animate-spin text-primary" />
-              </div>
-            ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-1">
+            {/* Source Text - First on mobile */}
+            <div className="order-1 sm:order-2">
               <Textarea
-                value={translatedText}
-                onChange={(e) => setTranslatedText(e.target.value)}
-                className="min-h-[180px] max-h-[250px] resize-none"
-                style={{ fontSize: `${fontSize}px` }}
-                placeholder="الترجمة ستظهر هنا..."
-                dir={isRTL(targetLang) ? "rtl" : "ltr"}
+                value={sourceText}
+                onChange={(e) => setSourceText(e.target.value)}
+                className="min-h-[120px] sm:min-h-[180px] max-h-[200px] sm:max-h-[250px] resize-none text-sm sm:text-base"
+                style={{ fontSize: `${Math.max(fontSize - 2, 12)}px` }}
+                placeholder="اكتب النص هنا..."
+                dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
               />
-            )}
+            </div>
 
-            {/* Source Text - Right */}
-            <Textarea
-              value={sourceText}
-              onChange={(e) => setSourceText(e.target.value)}
-              className="min-h-[180px] max-h-[250px] resize-none"
-              style={{ fontSize: `${fontSize}px` }}
-              placeholder="اكتب النص هنا..."
-              dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
-            />
+            {/* Translated Text - Second on mobile */}
+            <div className="order-2 sm:order-1">
+              {isLoading ? (
+                <div className="flex items-center justify-center min-h-[120px] sm:min-h-[180px] border rounded-md bg-muted">
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                </div>
+              ) : (
+                <Textarea
+                  value={translatedText}
+                  onChange={(e) => setTranslatedText(e.target.value)}
+                  className="min-h-[120px] sm:min-h-[180px] max-h-[200px] sm:max-h-[250px] resize-none text-sm sm:text-base"
+                  style={{ fontSize: `${Math.max(fontSize - 2, 12)}px` }}
+                  placeholder="الترجمة ستظهر هنا..."
+                  dir={isRTL(targetLang) ? "rtl" : "ltr"}
+                />
+              )}
+            </div>
           </div>
 
           {/* Action Buttons Row */}
-          <div className="grid grid-cols-[1fr_auto_1fr] gap-1 items-center">
+          <div className="flex flex-wrap gap-2 justify-center sm:grid sm:grid-cols-[1fr_auto_1fr] sm:gap-1 sm:items-center">
             <Button
               variant="outline"
               size="sm"
-              className="h-8"
+              className="h-8 text-xs sm:text-sm flex-1 sm:flex-none"
               onClick={() => copyToClipboard(translatedText, "الترجمة")}
               disabled={!translatedText}
             >
               <Copy className="h-3 w-3 ml-1" />
-              نسخ الترجمة
+              <span className="hidden xs:inline">نسخ</span> الترجمة
             </Button>
 
             {onSaveTranslation && (
               <Button
                 size="sm"
                 variant="secondary"
-                className="h-8"
+                className="h-8 text-xs sm:text-sm flex-1 sm:flex-none"
                 onClick={handleSaveTranslation}
                 disabled={!translatedText}
               >
                 <Save className="h-3 w-3 ml-1" />
-                حفظ تعديل الترجمة
+                حفظ
               </Button>
             )}
 
             <Button
               variant="outline"
               size="sm"
-              className="h-8"
+              className="h-8 text-xs sm:text-sm flex-1 sm:flex-none"
               onClick={() => copyToClipboard(sourceText, "النص الأصلي")}
             >
               <Copy className="h-3 w-3 ml-1" />
-              نسخ الأصلي
+              <span className="hidden xs:inline">نسخ</span> الأصلي
             </Button>
           </div>
         </div>
