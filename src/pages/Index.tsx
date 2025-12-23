@@ -642,7 +642,7 @@ const Index = () => {
           
           {/* Pending Images Preview */}
           {pendingImages.length > 0 && (
-            <div className="flex flex-wrap gap-2 p-2 rounded-md" style={{ backgroundColor: '#f7f7f7' }}>
+            <div className="flex flex-wrap gap-2 p-2 rounded-md border border-border/30" style={{ backgroundColor: '#f7f7f7' }}>
               {pendingImages.map((img, index) => (
                 <div key={index} className="relative">
                   <img 
