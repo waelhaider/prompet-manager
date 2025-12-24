@@ -153,7 +153,7 @@ export const TranslateDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[99vw] max-w-4xl max-h-[95vh] overflow-y-auto p-3 sm:p-6 mt-5 rounded-xl">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[95vh] overflow-y-auto overflow-x-hidden p-2 sm:p-6 mt-5 rounded-xl">
         <DialogHeader>
           <DialogTitle className="text-base sm:text-lg">ترجمة النص</DialogTitle>
         </DialogHeader>
@@ -220,15 +220,15 @@ export const TranslateDialog = ({
             </div>
           </div>
 
-          {/* Text Areas Row - Side by Side */}
-          <div dir="rtl" className="flex flex-row gap-2">
+          {/* Text Areas Row - Stack on mobile, side by side on larger screens */}
+          <div dir="rtl" className="flex flex-col sm:flex-row gap-2">
             {/* Source Text - Right */}
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <Label className="text-xs text-muted-foreground mb-1 block">النص الأصلي</Label>
               <Textarea
                 value={sourceText}
                 onChange={(e) => setSourceText(e.target.value)}
-                className="min-h-[280px] sm:min-h-[350px] max-h-[450px] resize-none text-sm sm:text-base"
+                className="min-h-[150px] sm:min-h-[350px] max-h-[450px] resize-none text-sm sm:text-base w-full"
                 style={{ fontSize: `${Math.max(fontSize - 2, 12)}px` }}
                 placeholder="اكتب النص هنا..."
                 dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
@@ -236,17 +236,17 @@ export const TranslateDialog = ({
             </div>
 
             {/* Translated Text - Left */}
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <Label className="text-xs text-muted-foreground mb-1 block">الترجمة</Label>
               {isLoading ? (
-                <div className="flex items-center justify-center min-h-[280px] sm:min-h-[350px] border rounded-md bg-muted">
+                <div className="flex items-center justify-center min-h-[150px] sm:min-h-[350px] border rounded-md bg-muted">
                   <Loader2 className="h-5 w-5 animate-spin text-primary" />
                 </div>
               ) : (
                 <Textarea
                   value={translatedText}
                   onChange={(e) => setTranslatedText(e.target.value)}
-                  className="min-h-[280px] sm:min-h-[350px] max-h-[450px] resize-none text-sm sm:text-base"
+                  className="min-h-[150px] sm:min-h-[350px] max-h-[450px] resize-none text-sm sm:text-base w-full"
                   style={{ fontSize: `${Math.max(fontSize - 2, 12)}px` }}
                   placeholder="الترجمة ستظهر هنا..."
                   dir={isRTL(targetLang) ? "rtl" : "ltr"}
@@ -255,37 +255,37 @@ export const TranslateDialog = ({
             </div>
           </div>
 
-          {/* Action Buttons Row */}
-          <div className="flex flex-row gap-1.5 justify-center flex-nowrap">
+          {/* Action Buttons Row - Wrap on small screens */}
+          <div className="flex flex-wrap gap-1.5 justify-center">
             <Button
               variant="outline"
               size="sm"
-              className="h-8 text-xs px-2 whitespace-nowrap"
+              className="h-8 text-xs px-2"
               onClick={() => copyToClipboard(translatedText, "الترجمة")}
               disabled={!translatedText}
             >
               <Copy className="h-3 w-3 ml-1 flex-shrink-0" />
-              <span className="truncate">نسخ الترجمة</span>
+              <span>نسخ الترجمة</span>
             </Button>
             {onSaveTranslation && (
               <Button
                 size="sm"
-                className="h-8 text-xs px-2 whitespace-nowrap bg-green-600 hover:bg-green-700 text-white"
+                className="h-8 text-xs px-2 bg-green-600 hover:bg-green-700 text-white"
                 onClick={handleSaveTranslation}
                 disabled={!translatedText}
               >
                 <Save className="h-3 w-3 ml-1 flex-shrink-0" />
-                <span className="truncate">حفظ الترجمة</span>
+                <span>حفظ الترجمة</span>
               </Button>
             )}
             <Button
               variant="outline"
               size="sm"
-              className="h-8 text-xs px-2 whitespace-nowrap"
+              className="h-8 text-xs px-2"
               onClick={() => copyToClipboard(sourceText, "النص الأصلي")}
             >
               <Copy className="h-3 w-3 ml-1 flex-shrink-0" />
-              <span className="truncate">نسخ الأصلي</span>
+              <span>نسخ الأصلي</span>
             </Button>
           </div>
         </div>
