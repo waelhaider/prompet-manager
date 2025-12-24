@@ -220,34 +220,34 @@ export const TranslateDialog = ({
             </div>
           </div>
 
-          {/* Text Areas Row - Stack on mobile, side by side on larger screens */}
-          <div dir="rtl" className="flex flex-col sm:flex-row gap-2">
+          {/* Text Areas Row - Always side by side for comparison */}
+          <div dir="rtl" className="grid grid-cols-2 gap-1 sm:gap-2">
             {/* Source Text - Right */}
-            <div className="flex-1 min-w-0">
-              <Label className="text-xs text-muted-foreground mb-1 block">النص الأصلي</Label>
+            <div className="min-w-0 overflow-hidden">
+              <Label className="text-xs text-muted-foreground mb-1 block truncate">النص الأصلي</Label>
               <Textarea
                 value={sourceText}
                 onChange={(e) => setSourceText(e.target.value)}
-                className="min-h-[150px] sm:min-h-[350px] max-h-[450px] resize-none text-sm sm:text-base w-full"
-                style={{ fontSize: `${Math.max(fontSize - 2, 12)}px` }}
+                className="min-h-[200px] sm:min-h-[350px] max-h-[450px] resize-none text-xs sm:text-base w-full"
+                style={{ fontSize: `${Math.max(fontSize - 4, 11)}px` }}
                 placeholder="اكتب النص هنا..."
                 dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
               />
             </div>
 
             {/* Translated Text - Left */}
-            <div className="flex-1 min-w-0">
-              <Label className="text-xs text-muted-foreground mb-1 block">الترجمة</Label>
+            <div className="min-w-0 overflow-hidden">
+              <Label className="text-xs text-muted-foreground mb-1 block truncate">الترجمة</Label>
               {isLoading ? (
-                <div className="flex items-center justify-center min-h-[150px] sm:min-h-[350px] border rounded-md bg-muted">
+                <div className="flex items-center justify-center min-h-[200px] sm:min-h-[350px] border rounded-md bg-muted">
                   <Loader2 className="h-5 w-5 animate-spin text-primary" />
                 </div>
               ) : (
                 <Textarea
                   value={translatedText}
                   onChange={(e) => setTranslatedText(e.target.value)}
-                  className="min-h-[150px] sm:min-h-[350px] max-h-[450px] resize-none text-sm sm:text-base w-full"
-                  style={{ fontSize: `${Math.max(fontSize - 2, 12)}px` }}
+                  className="min-h-[200px] sm:min-h-[350px] max-h-[450px] resize-none text-xs sm:text-base w-full"
+                  style={{ fontSize: `${Math.max(fontSize - 4, 11)}px` }}
                   placeholder="الترجمة ستظهر هنا..."
                   dir={isRTL(targetLang) ? "rtl" : "ltr"}
                 />
