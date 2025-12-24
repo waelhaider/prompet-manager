@@ -153,12 +153,12 @@ export const TranslateDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-4xl max-h-[95vh] overflow-y-auto overflow-x-hidden p-2 sm:p-6 mt-5 rounded-xl">
+      <DialogContent className="w-[95vw] max-w-4xl h-[calc(100vh-25px)] max-h-[calc(100vh-25px)] sm:max-h-[95vh] sm:h-auto overflow-y-auto overflow-x-hidden p-2 sm:p-6 mt-[25px] sm:mt-5 rounded-xl flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-base sm:text-lg">ترجمة النص</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-2 sm:space-y-3 mt-2">
+        <div className="space-y-2 sm:space-y-3 mt-2 flex-1 flex flex-col min-h-0">
           {/* Language Selectors Row */}
           <div dir="rtl" className="grid grid-cols-[1fr_auto_1fr] gap-1 sm:gap-2 items-end">
             {/* Source Language Selector - Right */}
@@ -221,14 +221,14 @@ export const TranslateDialog = ({
           </div>
 
           {/* Text Areas Row - Always side by side for comparison */}
-          <div dir="rtl" className="grid grid-cols-2 gap-1 sm:gap-2">
+          <div dir="rtl" className="grid grid-cols-2 gap-1 sm:gap-2 flex-1 min-h-0">
             {/* Source Text - Right */}
-            <div className="min-w-0 overflow-hidden">
+            <div className="min-w-0 overflow-hidden flex flex-col">
               <Label className="text-xs text-muted-foreground mb-1 block truncate">النص الأصلي</Label>
               <Textarea
                 value={sourceText}
                 onChange={(e) => setSourceText(e.target.value)}
-                className="min-h-[200px] sm:min-h-[350px] max-h-[450px] resize-none text-xs sm:text-base w-full"
+                className="flex-1 min-h-0 h-full resize-none text-xs sm:text-base w-full"
                 style={{ fontSize: `${Math.max(fontSize - 4, 11)}px` }}
                 placeholder="اكتب النص هنا..."
                 dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
@@ -236,17 +236,17 @@ export const TranslateDialog = ({
             </div>
 
             {/* Translated Text - Left */}
-            <div className="min-w-0 overflow-hidden">
+            <div className="min-w-0 overflow-hidden flex flex-col">
               <Label className="text-xs text-muted-foreground mb-1 block truncate">الترجمة</Label>
               {isLoading ? (
-                <div className="flex items-center justify-center min-h-[200px] sm:min-h-[350px] border rounded-md bg-muted">
+                <div className="flex items-center justify-center flex-1 min-h-0 border rounded-md bg-muted">
                   <Loader2 className="h-5 w-5 animate-spin text-primary" />
                 </div>
               ) : (
                 <Textarea
                   value={translatedText}
                   onChange={(e) => setTranslatedText(e.target.value)}
-                  className="min-h-[200px] sm:min-h-[350px] max-h-[450px] resize-none text-xs sm:text-base w-full"
+                  className="flex-1 min-h-0 h-full resize-none text-xs sm:text-base w-full"
                   style={{ fontSize: `${Math.max(fontSize - 4, 11)}px` }}
                   placeholder="الترجمة ستظهر هنا..."
                   dir={isRTL(targetLang) ? "rtl" : "ltr"}
