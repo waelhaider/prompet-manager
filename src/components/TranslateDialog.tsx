@@ -153,7 +153,7 @@ export const TranslateDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-4xl h-[calc(100vh-25px)] max-h-[calc(100vh-25px)] sm:max-h-[95vh] sm:h-auto overflow-y-auto overflow-x-hidden p-2 sm:p-6 mt-[25px] sm:mt-5 rounded-xl flex flex-col">
+      <DialogContent className="w-[95vw] max-w-4xl h-[calc(100vh-100px)] max-h-[calc(100vh-100px)] sm:max-h-[95vh] sm:h-auto overflow-y-auto overflow-x-hidden p-2 sm:p-6 mt-[50px] sm:mt-5 mb-[50px] sm:mb-0 rounded-xl flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-base sm:text-lg">ترجمة النص</DialogTitle>
         </DialogHeader>
@@ -228,8 +228,8 @@ export const TranslateDialog = ({
               <Textarea
                 value={sourceText}
                 onChange={(e) => setSourceText(e.target.value)}
-                className="flex-1 min-h-0 h-full resize-none text-xs sm:text-base w-full"
-                style={{ fontSize: `${Math.max(fontSize - 4, 11)}px` }}
+                className="flex-1 min-h-0 h-full resize-none w-full"
+                style={{ fontSize: `${fontSize}px` }}
                 placeholder="اكتب النص هنا..."
                 dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
               />
@@ -246,8 +246,8 @@ export const TranslateDialog = ({
                 <Textarea
                   value={translatedText}
                   onChange={(e) => setTranslatedText(e.target.value)}
-                  className="flex-1 min-h-0 h-full resize-none text-xs sm:text-base w-full"
-                  style={{ fontSize: `${Math.max(fontSize - 4, 11)}px` }}
+                  className="flex-1 min-h-0 h-full resize-none w-full"
+                  style={{ fontSize: `${fontSize}px` }}
                   placeholder="الترجمة ستظهر هنا..."
                   dir={isRTL(targetLang) ? "rtl" : "ltr"}
                 />
@@ -256,36 +256,36 @@ export const TranslateDialog = ({
           </div>
 
           {/* Action Buttons Row - Wrap on small screens */}
-          <div className="flex flex-wrap gap-1.5 justify-center">
+          <div className="flex gap-1 justify-center flex-nowrap">
             <Button
               variant="outline"
               size="sm"
-              className="h-8 text-xs px-2"
+              className="h-7 text-[10px] sm:text-xs px-1.5 sm:px-2 min-w-0"
               onClick={() => copyToClipboard(translatedText, "الترجمة")}
               disabled={!translatedText}
             >
-              <Copy className="h-3 w-3 ml-1 flex-shrink-0" />
-              <span>نسخ الترجمة</span>
+              <Copy className="h-3 w-3 ml-0.5 flex-shrink-0" />
+              <span className="truncate">نسخ الترجمة</span>
             </Button>
             {onSaveTranslation && (
               <Button
                 size="sm"
-                className="h-8 text-xs px-2 bg-green-600 hover:bg-green-700 text-white"
+                className="h-7 text-[10px] sm:text-xs px-1.5 sm:px-2 min-w-0 bg-green-600 hover:bg-green-700 text-white"
                 onClick={handleSaveTranslation}
                 disabled={!translatedText}
               >
-                <Save className="h-3 w-3 ml-1 flex-shrink-0" />
-                <span>حفظ الترجمة</span>
+                <Save className="h-3 w-3 ml-0.5 flex-shrink-0" />
+                <span className="truncate">حفظ الترجمة</span>
               </Button>
             )}
             <Button
               variant="outline"
               size="sm"
-              className="h-8 text-xs px-2"
+              className="h-7 text-[10px] sm:text-xs px-1.5 sm:px-2 min-w-0"
               onClick={() => copyToClipboard(sourceText, "النص الأصلي")}
             >
-              <Copy className="h-3 w-3 ml-1 flex-shrink-0" />
-              <span>نسخ الأصلي</span>
+              <Copy className="h-3 w-3 ml-0.5 flex-shrink-0" />
+              <span className="truncate">نسخ الأصلي</span>
             </Button>
           </div>
         </div>
