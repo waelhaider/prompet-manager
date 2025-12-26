@@ -148,7 +148,7 @@ export const TranslateDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-4xl h-[calc(100dvh-80px)] max-h-[calc(100dvh-80px)] overflow-hidden p-2 sm:p-6 rounded-xl flex flex-col top-[35px] translate-y-0">
+      <DialogContent className="w-[95vw] max-w-4xl h-[calc(100dvh-80px)] max-h-[calc(100dvh-80px)] overflow-hidden p-1 sm:p-3 rounded-xl flex flex-col top-[35px] translate-y-0">
         <DialogHeader>
           <DialogTitle className="text-base sm:text-lg mt-0">ترجمة النص</DialogTitle>
         </DialogHeader>
