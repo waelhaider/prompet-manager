@@ -155,7 +155,7 @@ export const TranslateDialog = ({
 
         <div className="space-y-2 sm:space-y-3 mt-2 flex-1 flex flex-col min-h-0">
           {/* Language Selectors Row */}
-          <div dir="rtl" className="grid grid-cols-[1fr_auto_1fr] gap-1 sm:gap-2 items-end mt-[-20px]">
+          <div dir="rtl" className="grid grid-cols-[1fr_auto_1fr] gap-1 sm:gap-2 items-end">
             {/* Source Language Selector - Right */}
             <div className="space-y-1">
               <Label className="text-sm font-semibold block text-center">
@@ -217,7 +217,7 @@ export const TranslateDialog = ({
           <div dir="rtl" className="grid grid-cols-2 gap-1 sm:gap-2 flex-1 min-h-0">
             {/* Source Text - Right */}
             <div className="min-w-0 overflow-hidden flex flex-col">
-              <Label className="text-xs text-muted-foreground mb-1 block truncate px-9">النص الأصلي</Label>
+              <Label className="text-xs text-muted-foreground mb-1 block truncate">النص الأصلي</Label>
               <Textarea
                 value={sourceText}
                 onChange={(e) => setSourceText(e.target.value)}
@@ -238,7 +238,7 @@ export const TranslateDialog = ({
 
             {/* Translated Text - Left */}
             <div className="min-w-0 overflow-hidden flex flex-col">
-              <Label className="text-xs text-muted-foreground mb-1 block truncate px-12">الترجمة</Label>
+              <Label className="text-xs text-muted-foreground mb-1 block truncate">الترجمة</Label>
               {isLoading ? (
                 <div className="flex items-center justify-center flex-1 min-h-0 border rounded-md bg-muted">
                   <Loader2 className="h-5 w-5 animate-spin text-primary" />
@@ -257,17 +257,17 @@ export const TranslateDialog = ({
           </div>
 
           {/* Action Buttons Row - Wrap on small screens */}
-          <div className="flex gap-1 justify-center flex-nowrap">
+          <div className="flex gap-1 justify-center flex-nowrap relative -top-1.5">
             <Button
               variant="outline"
               size="sm"
               className="h-7 text-[10px] sm:text-xs px-1.5 sm:px-2 min-w-0"
-              onClick={() => copyToClipboard(translatedText, "الترجمة")}
-              disabled={!translatedText}
+              onClick={() => copyToClipboard(sourceText, "النص الأصلي")}
             >
               <Copy className="h-3 w-3 ml-0.5 flex-shrink-0" />
-              <span className="truncate">نسخ الترجمة</span>
+              <span className="truncate">نسخ الأصلي</span>
             </Button>
+
             {onSaveTranslation && (
               <Button
                 size="sm"
@@ -282,11 +282,12 @@ export const TranslateDialog = ({
             <Button
               variant="outline"
               size="sm"
-              className="h-7 text-[10px] sm:text-xs px-1.5 sm:px-2 min-w-0"
-              onClick={() => copyToClipboard(sourceText, "النص الأصلي")}
+              className="h-7 text-[10px] sm:text-xs px-1.5 sm:px-0 min-w-0"
+              onClick={() => copyToClipboard(translatedText, "الترجمة")}
+              disabled={!translatedText}
             >
               <Copy className="h-3 w-3 ml-0.5 flex-shrink-0" />
-              <span className="truncate">نسخ الأصلي</span>
+              <span className="truncate">نسخ الترجمة</span>
             </Button>
           </div>
         </div>
