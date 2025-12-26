@@ -257,7 +257,7 @@ export const TranslateDialog = ({
           </div>
 
           {/* Action Buttons Row - Wrap on small screens */}
-          <div className="flex gap-1 justify-center flex-nowrap relative -top-2 pb-3">
+          <div className="flex gap-1 justify-center flex-nowrap relative -top-2">
             <Button
               variant="outline"
               size="sm"
