@@ -155,7 +155,7 @@ export const TranslateDialog = ({
 
         <div className="space-y-2 sm:space-y-3 mt-2 flex-1 flex flex-col min-h-0">
           {/* Language Selectors Row */}
-          <div dir="rtl" className="grid grid-cols-[1fr_auto_1fr] gap-1 sm:gap-2 items-end">
+          <div dir="rtl" className="grid grid-cols-[1fr_auto_1fr] gap-1 sm:gap-2 items-end mt-[-20px]">
             {/* Source Language Selector - Right */}
             <div className="space-y-1">
               <Label className="text-sm font-semibold block text-center">
@@ -217,7 +217,7 @@ export const TranslateDialog = ({
           <div dir="rtl" className="grid grid-cols-2 gap-1 sm:gap-2 flex-1 min-h-0">
             {/* Source Text - Right */}
             <div className="min-w-0 overflow-hidden flex flex-col">
-              <Label className="text-xs text-muted-foreground mb-1 block truncate">النص الأصلي</Label>
+              <Label className="text-xs text-muted-foreground mb-1 block truncate px-9">النص الأصلي</Label>
               <Textarea
                 value={sourceText}
                 onChange={(e) => setSourceText(e.target.value)}
@@ -238,7 +238,7 @@ export const TranslateDialog = ({
 
             {/* Translated Text - Left */}
             <div className="min-w-0 overflow-hidden flex flex-col">
-              <Label className="text-xs text-muted-foreground mb-1 block truncate">الترجمة</Label>
+              <Label className="text-xs text-muted-foreground mb-1 block truncate px-12">الترجمة</Label>
               {isLoading ? (
                 <div className="flex items-center justify-center flex-1 min-h-0 border rounded-md bg-muted">
                   <Loader2 className="h-5 w-5 animate-spin text-primary" />
