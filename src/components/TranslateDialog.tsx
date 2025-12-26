@@ -150,7 +150,7 @@ export const TranslateDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-4xl h-[calc(100dvh-80px)] max-h-[calc(100dvh-80px)] overflow-hidden p-1 sm:p-3 rounded-xl flex flex-col top-[35px] translate-y-0">
         <DialogHeader>
-          <DialogTitle className="text-base sm:text-lg mt-0"></DialogTitle>
+          <DialogTitle className="text-base sm:text-lg mt-0">ترجمة النص</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-2 sm:space-y-3 mt-2 flex-1 flex flex-col min-h-0">
@@ -257,7 +257,7 @@ export const TranslateDialog = ({
           </div>
 
           {/* Action Buttons Row - Wrap on small screens */}
-          <div className="flex gap-1 justify-center flex-nowrap relative -top-1.5">
+          <div className="flex gap-1 justify-center flex-nowrap relative -top-2 pb-3">
             <Button
               variant="outline"
               size="sm"
