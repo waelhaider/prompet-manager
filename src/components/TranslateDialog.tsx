@@ -155,7 +155,7 @@ export const TranslateDialog = ({
 
         <div className="space-y-2 sm:space-y-3 mt-2 flex-1 flex flex-col min-h-0">
           {/* Language Selectors Row */}
-          <div dir="rtl" className="grid grid-cols-[1fr_auto_1fr] gap-1 sm:gap-2 items-end">
+          <div dir="rtl" className="grid grid-cols-[1fr_auto_1fr] gap-1 sm:gap-2 items-end mt-[-20px]">
             {/* Source Language Selector - Right */}
             <div className="space-y-1">
               <Label className="text-sm font-semibold block text-center">
