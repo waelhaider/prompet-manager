@@ -1,10 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Loader2, Copy, ArrowLeftRight, Save } from "lucide-react";
@@ -39,7 +34,7 @@ const LANGUAGES = [
 ];
 
 const getLanguageName = (code: string) => {
-  const lang = LANGUAGES.find(l => l.code === code);
+  const lang = LANGUAGES.find((l) => l.code === code);
   return lang?.name || code;
 };
 
@@ -70,15 +65,15 @@ export const TranslateDialog = ({
   // Auto-translate with debounce when source text changes
   useEffect(() => {
     if (!open || !sourceText) return;
-    
+
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
-    
+
     debounceRef.current = setTimeout(() => {
       translateText(sourceText, sourceLang);
     }, 500);
-    
+
     return () => {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
@@ -94,26 +89,26 @@ export const TranslateDialog = ({
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${fromLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(textToTranslate)}`
+        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${fromLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(textToTranslate)}`,
       );
-      
+
       if (!response.ok) {
-        throw new Error('Translation failed');
+        throw new Error("Translation failed");
       }
-      
+
       const data = await response.json();
-      
+
       // Get detected language from response (index 2)
       if (data[2] && fromLang === "auto") {
         setDetectedLang(data[2]);
       }
-      
+
       // تجميع النص المترجم من الاستجابة
-      let result = '';
+      let result = "";
       if (data && data[0]) {
-        result = data[0].map((item: any) => item[0]).join('');
+        result = data[0].map((item: any) => item[0]).join("");
       }
-      
+
       setTranslatedText(result || "حدث خطأ في الترجمة.");
     } catch (error) {
       console.error("Translation error:", error);
@@ -133,9 +128,9 @@ export const TranslateDialog = ({
     const tempText = sourceText;
     setSourceText(translatedText);
     setTranslatedText(tempText);
-    
+
     // تبديل اللغات
-    const actualSourceLang = sourceLang === "auto" ? (detectedLang || "en") : sourceLang;
+    const actualSourceLang = sourceLang === "auto" ? detectedLang || "en" : sourceLang;
     setSourceLang(targetLang);
     setTargetLang(actualSourceLang);
     setDetectedLang(null);
@@ -153,11 +148,11 @@ export const TranslateDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-4xl h-[calc(100dvh-70px)] max-h-[calc(100dvh-70px)] overflow-hidden p-2 sm:p-6 rounded-xl flex flex-col top-[30px] translate-y-0">
+      <DialogContent className="w-[95vw] max-w-4xl h-[calc(100dvh-80px)] max-h-[calc(100dvh-80px)] overflow-hidden p-2 sm:p-6 rounded-xl flex flex-col top-[35px] translate-y-0">
         <DialogHeader>
-          <DialogTitle className="text-base sm:text-lg">ترجمة النص</DialogTitle>
+          <DialogTitle className="text-base sm:text-lg mt-1">ترجمة النص</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-2 sm:space-y-3 mt-2 flex-1 flex flex-col min-h-0">
           {/* Language Selectors Row */}
           <div dir="rtl" className="grid grid-cols-[1fr_auto_1fr] gap-1 sm:gap-2 items-end">
@@ -166,9 +161,7 @@ export const TranslateDialog = ({
               <Label className="text-sm font-semibold block text-center">
                 اللغة الأصلية
                 {sourceLang === "auto" && detectedLang && (
-                  <span className="text-xs text-muted-foreground mr-1">
-                    ({getLanguageName(detectedLang)})
-                  </span>
+                  <span className="text-xs text-muted-foreground mr-1">({getLanguageName(detectedLang)})</span>
                 )}
               </Label>
               <Select
@@ -231,7 +224,15 @@ export const TranslateDialog = ({
                 className="flex-1 min-h-0 h-full resize-none w-full"
                 style={{ fontSize: `${fontSize}px` }}
                 placeholder="اكتب النص هنا..."
-                dir={sourceLang === "auto" ? (detectedLang && RTL_LANGUAGES.includes(detectedLang) ? "rtl" : "ltr") : (isRTL(sourceLang) ? "rtl" : "ltr")}
+                dir={
+                  sourceLang === "auto"
+                    ? detectedLang && RTL_LANGUAGES.includes(detectedLang)
+                      ? "rtl"
+                      : "ltr"
+                    : isRTL(sourceLang)
+                      ? "rtl"
+                      : "ltr"
+                }
               />
             </div>
 
