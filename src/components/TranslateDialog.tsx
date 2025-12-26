@@ -171,7 +171,7 @@ export const TranslateDialog = ({
                   if (val !== "auto") setDetectedLang(null);
                 }}
               >
-                <SelectTrigger className="h-8 text-s">
+                <SelectTrigger className="h-8 text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -199,7 +199,7 @@ export const TranslateDialog = ({
             <div className="space-y-1">
               <Label className="text-sm font-semibold block text-center">اللغة المترجمة</Label>
               <Select value={targetLang} onValueChange={setTargetLang}>
-                <SelectTrigger className="h-8 text-s">
+                <SelectTrigger className="h-8 text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -257,7 +257,7 @@ export const TranslateDialog = ({
           </div>
 
           {/* Action Buttons Row - Wrap on small screens */}
-          <div className="flex gap-1 justify-center flex-nowrap relative -top-1.5">
+          <div className="flex gap-1 justify-center flex-nowrap relative -top-2 pb-3">
             <Button
               variant="outline"
               size="sm"
