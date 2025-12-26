@@ -271,7 +271,7 @@ export const TranslateDialog = ({
             {onSaveTranslation && (
               <Button
                 size="sm"
-                className="h-7 text-[12px] sm:text-xs px-1.5 sm:px-2 min-w-0 bg-green-600 hover:bg-green-700 text-white"
+                className="h-7 text-[10px] sm:text-xs px-1.5 sm:px-2 min-w-0 bg-green-600 hover:bg-green-700 text-white"
                 onClick={handleSaveTranslation}
                 disabled={!translatedText}
               >
@@ -282,7 +282,7 @@ export const TranslateDialog = ({
             <Button
               variant="outline"
               size="sm"
-              className="h-7 text-[12px] sm:text-xs px-1.5 sm:px-0 min-w-0"
+              className="h-7 text-[10px] sm:text-xs px-1.5 sm:px-0 min-w-0"
               onClick={() => copyToClipboard(translatedText, "الترجمة")}
               disabled={!translatedText}
             >
