@@ -261,7 +261,7 @@ export const TranslateDialog = ({
             <Button
               variant="outline"
               size="sm"
-              className="h-7 text-[12px] sm:text-xs px-1.5 sm:px-2 min-w-0"
+              className="h-7 text-[12px] sm:text-s px-1.5 sm:px-2 min-w-0"
               onClick={() => copyToClipboard(sourceText, "النص الأصلي")}
             >
               <Copy className="h-3 w-3 ml-0.5 flex-shrink-0" />
