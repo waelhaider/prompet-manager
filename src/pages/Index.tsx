@@ -428,7 +428,7 @@ const Index = () => {
     if ("showSaveFilePicker" in window) {
       try {
         const handle = await (window as any).showSaveFilePicker({
-          suggestedName: `${activeBoard}-${new Date().toISOString().split("T")[0]}.json`,
+          suggestedName: `${activeBoard}(prompet)-${new Date().toISOString().split("T")[0]}.json`,
           types: [
             {
               description: "JSON Files",
