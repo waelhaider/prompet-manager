@@ -12,7 +12,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useIndexedDB } from "@/hooks/useIndexedDB";
 import { Save, Trash2, ImagePlus, X, Loader2, ArrowUp } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Note } from "@/lib/indexedDB";
 const Index = () => {
@@ -56,9 +65,7 @@ const Index = () => {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const notesContainerRef = useRef<HTMLDivElement>(null);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
 
   // Update activeBoard when boards are loaded or changed
   useEffect(() => {
@@ -74,8 +81,8 @@ const Index = () => {
       setShowScrollTop(window.scrollY > 400);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Track if we have a history state pushed for dialogs
@@ -83,27 +90,45 @@ const Index = () => {
 
   // Handle back button/gesture to close dialogs instead of navigating away
   useEffect(() => {
-    const anyDialogOpen = menuOpen || reorderOpen || addBoardOpen || editBoardOpen || 
-      deleteBoardOpen || restoreOpen || translateOpen || !!viewingImage || 
-      !!confirmDeleteNoteId || !!confirmDeleteBoardName;
+    const anyDialogOpen =
+      menuOpen ||
+      reorderOpen ||
+      addBoardOpen ||
+      editBoardOpen ||
+      deleteBoardOpen ||
+      restoreOpen ||
+      translateOpen ||
+      !!viewingImage ||
+      !!confirmDeleteNoteId ||
+      !!confirmDeleteBoardName;
 
     if (anyDialogOpen && !hasHistoryState.current) {
       // Push a single state when first dialog opens
-      window.history.pushState({ dialogOpen: true }, '');
+      window.history.pushState({ dialogOpen: true }, "");
       hasHistoryState.current = true;
     } else if (!anyDialogOpen && hasHistoryState.current) {
       // When all dialogs are closed normally (not via back), go back to remove the history entry
       window.history.back();
       hasHistoryState.current = false;
     }
-  }, [menuOpen, reorderOpen, addBoardOpen, editBoardOpen, deleteBoardOpen, 
-      restoreOpen, translateOpen, viewingImage, confirmDeleteNoteId, confirmDeleteBoardName]);
+  }, [
+    menuOpen,
+    reorderOpen,
+    addBoardOpen,
+    editBoardOpen,
+    deleteBoardOpen,
+    restoreOpen,
+    translateOpen,
+    viewingImage,
+    confirmDeleteNoteId,
+    confirmDeleteBoardName,
+  ]);
 
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
       // Mark that we no longer have a history state
       hasHistoryState.current = false;
-      
+
       // Close dialogs in order of priority
       if (viewingImage) {
         setViewingImage(null);
@@ -128,13 +153,23 @@ const Index = () => {
       }
     };
 
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [menuOpen, reorderOpen, addBoardOpen, editBoardOpen, deleteBoardOpen, 
-      restoreOpen, translateOpen, viewingImage, confirmDeleteNoteId, confirmDeleteBoardName]);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [
+    menuOpen,
+    reorderOpen,
+    addBoardOpen,
+    editBoardOpen,
+    deleteBoardOpen,
+    restoreOpen,
+    translateOpen,
+    viewingImage,
+    confirmDeleteNoteId,
+    confirmDeleteBoardName,
+  ]);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const increaseFontSize = () => {
@@ -149,31 +184,31 @@ const Index = () => {
     const files = event.target.files;
     if (!files) return;
 
-    Array.from(files).forEach(file => {
+    Array.from(files).forEach((file) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
           // Resize to 35% of original dimensions
-          const canvas = document.createElement('canvas');
+          const canvas = document.createElement("canvas");
           canvas.width = img.width * 0.35;
           canvas.height = img.height * 0.35;
-          const ctx = canvas.getContext('2d');
+          const ctx = canvas.getContext("2d");
           if (ctx) {
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const resizedBase64 = canvas.toDataURL('image/jpeg', 1.0);
-            setPendingImages(prev => [...prev, resizedBase64]);
+            const resizedBase64 = canvas.toDataURL("image/jpeg", 1.0);
+            setPendingImages((prev) => [...prev, resizedBase64]);
           }
         };
         img.src = e.target?.result as string;
       };
       reader.readAsDataURL(file);
     });
-    event.target.value = '';
+    event.target.value = "";
   };
 
   const removePendingImage = (index: number) => {
-    setPendingImages(prev => prev.filter((_, i) => i !== index));
+    setPendingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const saveNote = () => {
@@ -181,28 +216,34 @@ const Index = () => {
       toast({
         title: "تنبيه",
         description: "الرجاء كتابة نص أو إضافة صورة للحفظ",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
     if (editingNote) {
       const editedNoteId = editingNote.id;
-      setNotes(notes.map(n => n.id === editingNote.id ? {
-        ...n,
-        content: noteContent,
-        images: pendingImages.length > 0 ? pendingImages : n.images
-      } : n));
+      setNotes(
+        notes.map((n) =>
+          n.id === editingNote.id
+            ? {
+                ...n,
+                content: noteContent,
+                images: pendingImages.length > 0 ? pendingImages : n.images,
+              }
+            : n,
+        ),
+      );
       setEditingNote(null);
       setHighlightedNoteId(editedNoteId);
-      
+
       // Scroll to the edited note after a brief delay
       setTimeout(() => {
         const noteElement = document.getElementById(`note-${editedNoteId}`);
         if (noteElement) {
-          noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          noteElement.scrollIntoView({ behavior: "smooth", block: "center" });
         }
       }, 100);
-      
+
       setTimeout(() => {
         setHighlightedNoteId(null);
       }, 5000);
@@ -217,7 +258,7 @@ const Index = () => {
         content: noteContent,
         board: activeBoard,
         images: pendingImages.length > 0 ? pendingImages : undefined,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       };
       setNotes([newNote, ...notes]);
       toast({
@@ -233,17 +274,17 @@ const Index = () => {
     navigator.clipboard.writeText(note.content);
     toast({
       title: "تم النسخ",
-      description: "تم نسخ النص بنجاح"
+      description: "تم نسخ النص بنجاح",
     });
   };
   const deleteNote = (id: string) => {
-    const noteToDelete = notes.find(n => n.id === id);
+    const noteToDelete = notes.find((n) => n.id === id);
     if (noteToDelete) {
       const newDeletedNotes = [...deletedNotes, noteToDelete];
       setDeletedNotes(newDeletedNotes);
       localStorage.setItem("deletedNotes", JSON.stringify(newDeletedNotes));
     }
-    setNotes(notes.filter(n => n.id !== id));
+    setNotes(notes.filter((n) => n.id !== id));
     toast({
       title: "تم الحذف",
       description: "تم نقل الملاحظة إلى المحذوفات",
@@ -252,13 +293,13 @@ const Index = () => {
   };
 
   const restoreNote = (noteId: string) => {
-    const noteToRestore = deletedNotes.find(n => n.id === noteId);
+    const noteToRestore = deletedNotes.find((n) => n.id === noteId);
     if (noteToRestore) {
       // Check if the original board still exists
       const targetBoardName = boards.includes(noteToRestore.board) ? noteToRestore.board : boards[0];
       const restoredNote = { ...noteToRestore, board: targetBoardName };
       setNotes([restoredNote, ...notes]);
-      setDeletedNotes(deletedNotes.filter(n => n.id !== noteId));
+      setDeletedNotes(deletedNotes.filter((n) => n.id !== noteId));
       toast({
         title: "تمت الاستعادة",
         description: `تم استعادة الملاحظة إلى ${targetBoardName}`,
@@ -268,7 +309,7 @@ const Index = () => {
   };
 
   const permanentlyDeleteNote = (noteId: string) => {
-    setDeletedNotes(deletedNotes.filter(n => n.id !== noteId));
+    setDeletedNotes(deletedNotes.filter((n) => n.id !== noteId));
     setConfirmDeleteNoteId(null);
     toast({
       title: "تم الحذف نهائياً",
@@ -278,7 +319,7 @@ const Index = () => {
   };
 
   const permanentlyDeleteBoard = (boardName: string) => {
-    setDeletedBoards(deletedBoards.filter(d => d.board !== boardName));
+    setDeletedBoards(deletedBoards.filter((d) => d.board !== boardName));
     setBoardToRestore("");
     setConfirmDeleteBoardName(null);
     toast({
@@ -298,16 +339,22 @@ const Index = () => {
     });
     window.setTimeout(() => t.dismiss(), 500);
     // Scroll to top and focus on textarea
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
     setTimeout(() => {
       textareaRef.current?.focus();
     }, 300);
   };
   const moveNoteToBoard = (note: Note, targetBoardName: string) => {
-    setNotes(notes.map(n => n.id === note.id ? {
-      ...n,
-      board: targetBoardName
-    } : n));
+    setNotes(
+      notes.map((n) =>
+        n.id === note.id
+          ? {
+              ...n,
+              board: targetBoardName,
+            }
+          : n,
+      ),
+    );
     toast({
       title: "تم النقل",
       description: `تم نقل الملاحظة إلى ${targetBoardName}`,
@@ -325,88 +372,92 @@ const Index = () => {
       notes,
       deletedBoards,
       deletedNotes,
-      exportDate: new Date().toISOString()
+      exportDate: new Date().toISOString(),
     };
     const jsonString = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    
+    const blob = new Blob([jsonString], { type: "application/json" });
+
     // Try modern File System Access API first (shows save dialog)
-    if ('showSaveFilePicker' in window) {
+    if ("showSaveFilePicker" in window) {
       try {
         const handle = await (window as any).showSaveFilePicker({
-          suggestedName: `pic-manager-backup-${new Date().toISOString().split('T')[0]}.json`,
-          types: [{
-            description: 'JSON Files',
-            accept: { 'application/json': ['.json'] }
-          }]
+          suggestedName: `pic-manager-backup-${new Date().toISOString().split("T")[0]}.json`,
+          types: [
+            {
+              description: "JSON Files",
+              accept: { "application/json": [".json"] },
+            },
+          ],
         });
         const writable = await handle.createWritable();
         await writable.write(blob);
         await writable.close();
         toast({
           title: "تم التصدير",
-          description: "تم تصدير البيانات بنجاح"
+          description: "تم تصدير البيانات بنجاح",
         });
         return;
       } catch (err: any) {
-        if (err.name === 'AbortError') return; // User cancelled
+        if (err.name === "AbortError") return; // User cancelled
       }
     }
-    
+
     // Fallback for browsers that don't support showSaveFilePicker
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `pic-manager-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `pic-manager-backup-${new Date().toISOString().split("T")[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast({
       title: "تم التصدير",
-      description: "تم تصدير البيانات بنجاح"
+      description: "تم تصدير البيانات بنجاح",
     });
   };
 
   const exportBoard = async () => {
-    const boardNotes = notes.filter(n => n.board === activeBoard);
+    const boardNotes = notes.filter((n) => n.board === activeBoard);
     const data = {
       boardName: activeBoard,
       notes: boardNotes,
-      exportDate: new Date().toISOString()
+      exportDate: new Date().toISOString(),
     };
     const jsonString = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    
-    if ('showSaveFilePicker' in window) {
+    const blob = new Blob([jsonString], { type: "application/json" });
+
+    if ("showSaveFilePicker" in window) {
       try {
         const handle = await (window as any).showSaveFilePicker({
-          suggestedName: `${activeBoard}-${new Date().toISOString().split('T')[0]}.json`,
-          types: [{
-            description: 'JSON Files',
-            accept: { 'application/json': ['.json'] }
-          }]
+          suggestedName: `${activeBoard}-${new Date().toISOString().split("T")[0]}.json`,
+          types: [
+            {
+              description: "JSON Files",
+              accept: { "application/json": [".json"] },
+            },
+          ],
         });
         const writable = await handle.createWritable();
         await writable.write(blob);
         await writable.close();
         toast({
           title: "تم التصدير",
-          description: `تم تصدير لوحة "${activeBoard}" بنجاح`
+          description: `تم تصدير لوحة "${activeBoard}" بنجاح`,
         });
         return;
       } catch (err: any) {
-        if (err.name === 'AbortError') return;
+        if (err.name === "AbortError") return;
       }
     }
-    
+
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `${activeBoard}-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `${activeBoard}(prompet)-${new Date().toISOString().split("T")[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast({
       title: "تم التصدير",
-      description: `تم تصدير لوحة "${activeBoard}" بنجاح`
+      description: `تم تصدير لوحة "${activeBoard}" بنجاح`,
     });
   };
 
@@ -419,7 +470,7 @@ const Index = () => {
       try {
         const content = e.target?.result as string;
         const data = JSON.parse(content);
-        
+
         if (data.boardName && data.notes) {
           // Check if board already exists
           let newBoardName = data.boardName;
@@ -430,22 +481,22 @@ const Index = () => {
             }
             newBoardName = `${data.boardName} (${counter})`;
           }
-          
+
           // Add new board
           setBoards([...boards, newBoardName]);
-          
+
           // Add notes with new board name
           const importedNotes = data.notes.map((note: any) => ({
             ...note,
             id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-            board: newBoardName
+            board: newBoardName,
           }));
           setNotes([...notes, ...importedNotes]);
-          
+
           setActiveBoard(newBoardName);
           toast({
             title: "تم الاستيراد",
-            description: `تم استيراد لوحة "${newBoardName}" مع ${importedNotes.length} ملاحظات`
+            description: `تم استيراد لوحة "${newBoardName}" مع ${importedNotes.length} ملاحظات`,
           });
         } else {
           throw new Error("Invalid board file format");
@@ -454,12 +505,12 @@ const Index = () => {
         toast({
           title: "خطأ",
           description: "فشل استيراد اللوحة. تأكد من صحة الملف.",
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     };
     reader.readAsText(file);
-    event.target.value = '';
+    event.target.value = "";
   };
 
   const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -471,7 +522,7 @@ const Index = () => {
       try {
         const content = e.target?.result as string;
         const data = JSON.parse(content);
-        
+
         if (data.boards && data.notes) {
           setBoards(data.boards);
           setNotes(data.notes);
@@ -484,7 +535,7 @@ const Index = () => {
           setActiveBoard(data.boards[0]);
           toast({
             title: "تم الاستيراد",
-            description: "تم استيراد البيانات بنجاح"
+            description: "تم استيراد البيانات بنجاح",
           });
         } else {
           throw new Error("Invalid file format");
@@ -493,19 +544,19 @@ const Index = () => {
         toast({
           title: "خطأ",
           description: "فشل استيراد البيانات. تأكد من صحة الملف.",
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     };
     reader.readAsText(file);
-    event.target.value = '';
+    event.target.value = "";
   };
   const addBoard = () => {
     if (!newBoardName.trim()) {
       toast({
         title: "خطأ",
         description: "الرجاء إدخال اسم اللوحة",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -513,7 +564,7 @@ const Index = () => {
       toast({
         title: "خطأ",
         description: "اسم اللوحة موجود بالفعل",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -522,7 +573,7 @@ const Index = () => {
     setAddBoardOpen(false);
     toast({
       title: "تمت الإضافة",
-      description: `تمت إضافة لوحة ${newBoardName}`
+      description: `تمت إضافة لوحة ${newBoardName}`,
     });
   };
   const editBoard = () => {
@@ -530,21 +581,27 @@ const Index = () => {
       toast({
         title: "خطأ",
         description: "الرجاء إدخال اسم اللوحة الجديد",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
-    setBoards(boards.map(b => b === activeBoard ? newBoardName : b));
-    setNotes(notes.map(n => n.board === activeBoard ? {
-      ...n,
-      board: newBoardName
-    } : n));
+    setBoards(boards.map((b) => (b === activeBoard ? newBoardName : b)));
+    setNotes(
+      notes.map((n) =>
+        n.board === activeBoard
+          ? {
+              ...n,
+              board: newBoardName,
+            }
+          : n,
+      ),
+    );
     setActiveBoard(newBoardName);
     setNewBoardName("");
     setEditBoardOpen(false);
     toast({
       title: "تم التعديل",
-      description: "تم تعديل اسم اللوحة"
+      description: "تم تعديل اسم اللوحة",
     });
   };
   const deleteBoard = () => {
@@ -552,7 +609,7 @@ const Index = () => {
       toast({
         title: "خطأ",
         description: "الاسم غير مطابق",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -560,24 +617,24 @@ const Index = () => {
       toast({
         title: "خطأ",
         description: "لا يمكن حذف اللوحة الوحيدة",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
-    const boardNotes = notes.filter(n => n.board === activeBoard);
+    const boardNotes = notes.filter((n) => n.board === activeBoard);
     const newDeletedBoards = [...deletedBoards, { board: activeBoard, notes: boardNotes }];
     setDeletedBoards(newDeletedBoards);
     // Save immediately to localStorage to ensure persistence
     localStorage.setItem("deletedBoards", JSON.stringify(newDeletedBoards));
-    
-    setBoards(boards.filter(b => b !== activeBoard));
-    setNotes(notes.filter(n => n.board !== activeBoard));
+
+    setBoards(boards.filter((b) => b !== activeBoard));
+    setNotes(notes.filter((n) => n.board !== activeBoard));
     setActiveBoard(boards[0] === activeBoard ? boards[1] : boards[0]);
     setBoardToDelete("");
     setDeleteBoardOpen(false);
     toast({
       title: "تم الحذف",
-      description: "تم نقل اللوحة إلى المحذوفات"
+      description: "تم نقل اللوحة إلى المحذوفات",
     });
   };
 
@@ -586,31 +643,31 @@ const Index = () => {
       toast({
         title: "خطأ",
         description: "الرجاء اختيار لوحة للاستعادة",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
-    const deletedItem = deletedBoards.find(d => d.board === boardToRestore);
+    const deletedItem = deletedBoards.find((d) => d.board === boardToRestore);
     if (!deletedItem) return;
-    
+
     if (!targetBoard) {
       toast({
         title: "خطأ",
         description: "الرجاء اختيار اللوحة الهدف",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
 
-    const restoredNotes = deletedItem.notes.map(n => ({ ...n, board: targetBoard }));
+    const restoredNotes = deletedItem.notes.map((n) => ({ ...n, board: targetBoard }));
     setNotes([...notes, ...restoredNotes]);
-    setDeletedBoards(deletedBoards.filter(d => d.board !== boardToRestore));
+    setDeletedBoards(deletedBoards.filter((d) => d.board !== boardToRestore));
     setBoardToRestore("");
     setTargetBoard("");
     setRestoreOpen(false);
     toast({
       title: "تمت الاستعادة",
-      description: `تم استعادة ملاحظات ${deletedItem.board} إلى ${targetBoard}`
+      description: `تم استعادة ملاحظات ${deletedItem.board} إلى ${targetBoard}`,
     });
   };
   // Detect text direction based on majority of characters
@@ -619,12 +676,10 @@ const Index = () => {
     const latinPattern = /[a-zA-Z]/g;
     const arabicCount = (text.match(arabicPattern) || []).length;
     const latinCount = (text.match(latinPattern) || []).length;
-    return arabicCount >= latinCount ? 'rtl' : 'ltr';
+    return arabicCount >= latinCount ? "rtl" : "ltr";
   };
-  const filteredNotes = notes
-    .filter(n => n.board === activeBoard)
-    .sort((a, b) => parseInt(b.id) - parseInt(a.id)); // Sort from newest to oldest
-  
+  const filteredNotes = notes.filter((n) => n.board === activeBoard).sort((a, b) => parseInt(b.id) - parseInt(a.id)); // Sort from newest to oldest
+
   // Show loading state while data is being loaded from IndexedDB
   if (isLoading) {
     return (
@@ -637,22 +692,39 @@ const Index = () => {
     );
   }
 
-
-  return <div className="min-h-screen bg-background" dir="rtl">
-      <BoardTabs boards={boards} activeBoard={activeBoard} onBoardChange={setActiveBoard} onMenuOpen={() => setMenuOpen(true)} />
+  return (
+    <div className="min-h-screen bg-background" dir="rtl">
+      <BoardTabs
+        boards={boards}
+        activeBoard={activeBoard}
+        onBoardChange={setActiveBoard}
+        onMenuOpen={() => setMenuOpen(true)}
+      />
 
       <div className="container max-w-4xl mx-auto px-1 py-2 space-y-2">
         <div className="space-y-1.5 rounded-md">
-          <Textarea ref={textareaRef} value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="اكتب ملاحظتك هنا..." rows={editingNote ? Math.max(5, Math.min(15, noteContent.split('\n').length + 1)) : 3} className="resize-none" style={{ fontSize: `${fontSize}px`, minHeight: editingNote ? '120px' : undefined }} dir={getTextDirection(noteContent)} />
-          
+          <Textarea
+            ref={textareaRef}
+            value={noteContent}
+            onChange={(e) => setNoteContent(e.target.value)}
+            placeholder="اكتب ملاحظتك هنا..."
+            rows={editingNote ? Math.max(5, Math.min(15, noteContent.split("\n").length + 1)) : 3}
+            className="resize-none"
+            style={{ fontSize: `${fontSize}px`, minHeight: editingNote ? "120px" : undefined }}
+            dir={getTextDirection(noteContent)}
+          />
+
           {/* Pending Images Preview */}
           {pendingImages.length > 0 && (
-            <div className="flex flex-wrap gap-2 p-2 rounded-md border border-border/30" style={{ backgroundColor: '#f7f7f7' }}>
+            <div
+              className="flex flex-wrap gap-2 p-2 rounded-md border border-border/30"
+              style={{ backgroundColor: "#f7f7f7" }}
+            >
               {pendingImages.map((img, index) => (
                 <div key={index} className="relative">
-                  <img 
-                    src={img} 
-                    alt={`صورة ${index + 1}`} 
+                  <img
+                    src={img}
+                    alt={`صورة ${index + 1}`}
                     className="h-16 w-auto rounded border cursor-pointer"
                     onClick={() => setViewingImage(img)}
                   />
@@ -668,7 +740,7 @@ const Index = () => {
               ))}
             </div>
           )}
-          
+
           <div className="flex gap-2">
             <Button onClick={saveNote} size="sm" className="gap-1.5">
               <Save className="h-3.5 w-3.5" />
@@ -686,32 +758,56 @@ const Index = () => {
               <ImagePlus className="h-3.5 w-3.5" />
               تحميل صورة
             </Button>
-            {editingNote && <Button onClick={() => {
-              const editedNoteId = editingNote.id;
-              setEditingNote(null);
-              setNoteContent("");
-              setPendingImages([]);
-              // Keep the note highlighted for 5 seconds after cancel
-              setHighlightedNoteId(editedNoteId);
-              setTimeout(() => {
-                const noteElement = document.getElementById(`note-${editedNoteId}`);
-                if (noteElement) {
-                  noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-              }, 100);
-              setTimeout(() => {
-                setHighlightedNoteId(null);
-              }, 5000);
-            }} variant="outline" size="sm">
+            {editingNote && (
+              <Button
+                onClick={() => {
+                  const editedNoteId = editingNote.id;
+                  setEditingNote(null);
+                  setNoteContent("");
+                  setPendingImages([]);
+                  // Keep the note highlighted for 5 seconds after cancel
+                  setHighlightedNoteId(editedNoteId);
+                  setTimeout(() => {
+                    const noteElement = document.getElementById(`note-${editedNoteId}`);
+                    if (noteElement) {
+                      noteElement.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                  }, 100);
+                  setTimeout(() => {
+                    setHighlightedNoteId(null);
+                  }, 5000);
+                }}
+                variant="outline"
+                size="sm"
+              >
                 إلغاء
-              </Button>}
+              </Button>
+            )}
           </div>
         </div>
 
         <div className="space-y-1.5">
-          {filteredNotes.length === 0 ? <div className="text-center py-12 text-muted-foreground">
-              لا توجد ملاحظات في هذه اللوحة
-            </div> : filteredNotes.map(note => <div key={note.id} id={`note-${note.id}`}><NoteCard note={note} boards={boards} isSelected={selectedNoteId === note.id || highlightedNoteId === note.id} onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)} onCopy={() => copyNote(note)} onEdit={() => editNote(note)} onDelete={() => deleteNote(note.id)} onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)} onTranslate={() => translateNote(note)} fontSize={fontSize} onImageClick={setViewingImage} /></div>)}
+          {filteredNotes.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">لا توجد ملاحظات في هذه اللوحة</div>
+          ) : (
+            filteredNotes.map((note) => (
+              <div key={note.id} id={`note-${note.id}`}>
+                <NoteCard
+                  note={note}
+                  boards={boards}
+                  isSelected={selectedNoteId === note.id || highlightedNoteId === note.id}
+                  onSelect={() => setSelectedNoteId(note.id === selectedNoteId ? null : note.id)}
+                  onCopy={() => copyNote(note)}
+                  onEdit={() => editNote(note)}
+                  onDelete={() => deleteNote(note.id)}
+                  onMoveTo={(targetBoard) => moveNoteToBoard(note, targetBoard)}
+                  onTranslate={() => translateNote(note)}
+                  fontSize={fontSize}
+                  onImageClick={setViewingImage}
+                />
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -734,7 +830,12 @@ const Index = () => {
           <DialogHeader>
             <DialogTitle>إضافة لوحة جديدة</DialogTitle>
           </DialogHeader>
-          <Input value={newBoardName} onChange={e => setNewBoardName(e.target.value)} placeholder="اسم اللوحة" onKeyDown={e => e.key === 'Enter' && addBoard()} />
+          <Input
+            value={newBoardName}
+            onChange={(e) => setNewBoardName(e.target.value)}
+            placeholder="اسم اللوحة"
+            onKeyDown={(e) => e.key === "Enter" && addBoard()}
+          />
           <DialogFooter>
             <Button onClick={addBoard}>إضافة</Button>
           </DialogFooter>
@@ -746,7 +847,12 @@ const Index = () => {
           <DialogHeader>
             <DialogTitle>تعديل اسم اللوحة: {activeBoard}</DialogTitle>
           </DialogHeader>
-          <Input value={newBoardName} onChange={e => setNewBoardName(e.target.value)} placeholder="الاسم الجديد" onKeyDown={e => e.key === 'Enter' && editBoard()} />
+          <Input
+            value={newBoardName}
+            onChange={(e) => setNewBoardName(e.target.value)}
+            placeholder="الاسم الجديد"
+            onKeyDown={(e) => e.key === "Enter" && editBoard()}
+          />
           <DialogFooter>
             <Button onClick={editBoard}>تعديل</Button>
           </DialogFooter>
@@ -758,10 +864,13 @@ const Index = () => {
           <DialogHeader>
             <DialogTitle>حذف اللوحة: {activeBoard}</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            اكتب اسم اللوحة بالضبط للتأكيد:
-          </p>
-          <Input value={boardToDelete} onChange={e => setBoardToDelete(e.target.value)} placeholder={activeBoard} onKeyDown={e => e.key === 'Enter' && deleteBoard()} />
+          <p className="text-sm text-muted-foreground">اكتب اسم اللوحة بالضبط للتأكيد:</p>
+          <Input
+            value={boardToDelete}
+            onChange={(e) => setBoardToDelete(e.target.value)}
+            placeholder={activeBoard}
+            onKeyDown={(e) => e.key === "Enter" && deleteBoard()}
+          />
           <DialogFooter>
             <Button onClick={deleteBoard} variant="destructive">
               حذف
@@ -770,24 +879,24 @@ const Index = () => {
         </DialogContent>
       </Dialog>
 
-      <TranslateDialog 
-        open={translateOpen} 
-        onOpenChange={setTranslateOpen} 
-        originalText={noteToTranslate?.content || ""} 
+      <TranslateDialog
+        open={translateOpen}
+        onOpenChange={setTranslateOpen}
+        originalText={noteToTranslate?.content || ""}
         onSaveTranslation={(newText) => {
           if (noteToTranslate) {
-            setNotes(notes.map(n => n.id === noteToTranslate.id ? { ...n, content: newText } : n));
+            setNotes(notes.map((n) => (n.id === noteToTranslate.id ? { ...n, content: newText } : n)));
           }
         }}
         fontSize={fontSize}
       />
 
-      <BoardManagement 
+      <BoardManagement
         open={menuOpen}
         onOpenChange={setMenuOpen}
-        onAddBoard={() => setAddBoardOpen(true)} 
-        onEditBoard={() => setEditBoardOpen(true)} 
-        onDeleteBoard={() => setDeleteBoardOpen(true)} 
+        onAddBoard={() => setAddBoardOpen(true)}
+        onEditBoard={() => setEditBoardOpen(true)}
+        onDeleteBoard={() => setDeleteBoardOpen(true)}
         onReorderBoards={() => setReorderOpen(true)}
         onRestoreBoards={() => setRestoreOpen(true)}
         onExport={exportData}
@@ -800,14 +909,17 @@ const Index = () => {
       />
 
       <Dialog open={restoreOpen} onOpenChange={setRestoreOpen}>
-        <DialogContent className="max-h-[80vh] overflow-y-auto rounded-2xl w-[99%] max-w-lg" style={{ backgroundColor: '#FAFAFA' }}>
+        <DialogContent
+          className="max-h-[80vh] overflow-y-auto rounded-2xl w-[99%] max-w-lg"
+          style={{ backgroundColor: "#FAFAFA" }}
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
               <span>المحذوفات</span>
               {(deletedNotes.length > 0 || deletedBoards.length > 0) && (
-                <Button 
-                  size="sm" 
-                  variant="destructive" 
+                <Button
+                  size="sm"
+                  variant="destructive"
                   className="h-7 text-xs"
                   onClick={() => setConfirmClearAll(true)}
                 >
@@ -817,27 +929,40 @@ const Index = () => {
               )}
             </DialogTitle>
           </DialogHeader>
-          
+
           {/* Deleted Notes Section */}
           <div className="space-y-2">
             <h3 className="text-sm font-medium">الملاحظات المحذوفة ({deletedNotes.length})</h3>
             {deletedNotes.length === 0 ? (
-              <p className="text-xs text-muted-foreground text-center py-2">
-                لا توجد ملاحظات محذوفة
-              </p>
+              <p className="text-xs text-muted-foreground text-center py-2">لا توجد ملاحظات محذوفة</p>
             ) : (
               <div className="max-h-40 overflow-y-auto space-y-1">
-                {deletedNotes.map(note => (
-                  <div key={note.id} className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-lg w-full">
+                {deletedNotes.map((note) => (
+                  <div
+                    key={note.id}
+                    className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-lg w-full"
+                  >
                     <div className="flex flex-col min-w-0 flex-1">
-                      <span className="line-clamp-2" style={{ fontSize: `${fontSize}px` }}>{note.content.substring(0, 80)}...</span>
+                      <span className="line-clamp-2" style={{ fontSize: `${fontSize}px` }}>
+                        {note.content.substring(0, 80)}...
+                      </span>
                       <span className="text-[10px] text-muted-foreground">من: {note.board}</span>
                     </div>
                     <div className="flex gap-1 shrink-0">
-                      <Button size="sm" variant="ghost" className="h-6 px-1.5 text-[10px]" onClick={() => restoreNote(note.id)}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 px-1.5 text-[10px]"
+                        onClick={() => restoreNote(note.id)}
+                      >
                         استعادة
                       </Button>
-                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-destructive hover:text-destructive" onClick={() => setConfirmDeleteNoteId(note.id)}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                        onClick={() => setConfirmDeleteNoteId(note.id)}
+                      >
                         <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
@@ -853,9 +978,7 @@ const Index = () => {
           <div className="space-y-2">
             <h3 className="text-sm font-medium">اللوحات المحذوفة ({deletedBoards.length})</h3>
             {deletedBoards.length === 0 ? (
-              <p className="text-xs text-muted-foreground text-center py-2">
-                لا توجد لوحات محذوفة
-              </p>
+              <p className="text-xs text-muted-foreground text-center py-2">لا توجد لوحات محذوفة</p>
             ) : (
               <>
                 <Select value={boardToRestore} onValueChange={setBoardToRestore}>
@@ -863,7 +986,7 @@ const Index = () => {
                     <SelectValue placeholder="اختر اللوحة المحذوفة" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover">
-                    {deletedBoards.map(d => (
+                    {deletedBoards.map((d) => (
                       <SelectItem key={d.board} value={d.board}>
                         {d.board} ({d.notes.length} ملاحظات)
                       </SelectItem>
@@ -875,7 +998,7 @@ const Index = () => {
                     <SelectValue placeholder="استعادة إلى اللوحة" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover">
-                    {boards.map(board => (
+                    {boards.map((board) => (
                       <SelectItem key={board} value={board}>
                         {board}
                       </SelectItem>
@@ -883,11 +1006,18 @@ const Index = () => {
                   </SelectContent>
                 </Select>
                 <DialogFooter className="flex gap-2 sm:gap-0">
-                  <Button onClick={() => setConfirmDeleteBoardName(boardToRestore)} size="sm" variant="destructive" disabled={!boardToRestore}>
+                  <Button
+                    onClick={() => setConfirmDeleteBoardName(boardToRestore)}
+                    size="sm"
+                    variant="destructive"
+                    disabled={!boardToRestore}
+                  >
                     <Trash2 className="h-3 w-3 ml-1" />
                     حذف نهائي
                   </Button>
-                  <Button onClick={restoreBoard} size="sm">استعادة اللوحة</Button>
+                  <Button onClick={restoreBoard} size="sm">
+                    استعادة اللوحة
+                  </Button>
                 </DialogFooter>
               </>
             )}
@@ -906,7 +1036,10 @@ const Index = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>إلغاء</AlertDialogCancel>
-            <AlertDialogAction onClick={() => confirmDeleteNoteId && permanentlyDeleteNote(confirmDeleteNoteId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={() => confirmDeleteNoteId && permanentlyDeleteNote(confirmDeleteNoteId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               حذف نهائياً
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -919,12 +1052,16 @@ const Index = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الحذف النهائي</AlertDialogTitle>
             <AlertDialogDescription>
-              هل أنت متأكد من حذف اللوحة "{confirmDeleteBoardName}" وجميع ملاحظاتها نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
+              هل أنت متأكد من حذف اللوحة "{confirmDeleteBoardName}" وجميع ملاحظاتها نهائياً؟ لا يمكن التراجع عن هذا
+              الإجراء.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>إلغاء</AlertDialogCancel>
-            <AlertDialogAction onClick={() => confirmDeleteBoardName && permanentlyDeleteBoard(confirmDeleteBoardName)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={() => confirmDeleteBoardName && permanentlyDeleteBoard(confirmDeleteBoardName)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               حذف نهائياً
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -942,7 +1079,7 @@ const Index = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>إلغاء</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={() => {
                 setDeletedNotes([]);
                 setDeletedBoards([]);
@@ -952,7 +1089,7 @@ const Index = () => {
                   description: "تم حذف جميع المحذوفات نهائياً",
                   duration: 1000,
                 });
-              }} 
+              }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               إفراغ الكل
@@ -972,12 +1109,18 @@ const Index = () => {
               pinch={{ step: 5 }}
             >
               <TransformComponent
-                wrapperStyle={{ width: '100%', height: '100%' }}
-                contentStyle={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                wrapperStyle={{ width: "100%", height: "100%" }}
+                contentStyle={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <img 
-                  src={viewingImage} 
-                  alt="صورة مكبرة" 
+                <img
+                  src={viewingImage}
+                  alt="صورة مكبرة"
                   className="max-w-full max-h-[85vh] object-contain select-none"
                 />
               </TransformComponent>
@@ -985,6 +1128,7 @@ const Index = () => {
           )}
         </DialogContent>
       </Dialog>
-    </div>;
+    </div>
+  );
 };
 export default Index;
