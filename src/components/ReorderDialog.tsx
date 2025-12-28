@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown } from "lucide-react";
 
@@ -16,12 +10,7 @@ interface ReorderDialogProps {
   onReorder: (boards: string[]) => void;
 }
 
-export const ReorderDialog = ({
-  open,
-  onOpenChange,
-  boards,
-  onReorder,
-}: ReorderDialogProps) => {
+export const ReorderDialog = ({ open, onOpenChange, boards, onReorder }: ReorderDialogProps) => {
   const [tempBoards, setTempBoards] = useState(boards);
 
   const moveUp = (index: number) => {
@@ -50,7 +39,7 @@ export const ReorderDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-popover">
+      <DialogContent className="bg-popover top-[10%] translate-y-0">
         <DialogHeader>
           <DialogTitle>ترتيب اللوحات</DialogTitle>
         </DialogHeader>
