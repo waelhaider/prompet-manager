@@ -860,7 +860,7 @@ const Index = () => {
       </Dialog>
 
       <Dialog open={deleteBoardOpen} onOpenChange={setDeleteBoardOpen}>
-        <DialogContent className="bg-popover">
+        <DialogContent className="bg-popover top-[10%] translate-y-0">
           <DialogHeader>
             <DialogTitle>حذف اللوحة: {activeBoard}</DialogTitle>
           </DialogHeader>
