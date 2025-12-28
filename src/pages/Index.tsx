@@ -845,7 +845,7 @@ const Index = () => {
       <Dialog open={editBoardOpen} onOpenChange={setEditBoardOpen}>
         <DialogContent className="bg-popover top-[10%] translate-y-0">
           <DialogHeader>
-            <DialogTitle className="text-center">تعديل اسم اللوحة: {activeBoard}</DialogTitle>
+            <DialogTitle>تعديل اسم اللوحة: {activeBoard}</DialogTitle>
           </DialogHeader>
           <Input
             value={newBoardName}
@@ -862,7 +862,8 @@ const Index = () => {
       <Dialog open={deleteBoardOpen} onOpenChange={setDeleteBoardOpen}>
         <DialogContent className="bg-popover top-[10%] translate-y-0">
           <DialogHeader>
-            <DialogTitle>حذف اللوحة: {activeBoard}</DialogTitle>
+            <DialogTitle className="text-center">حذف اللوحة: {activeBoard}</DialogTitle>
+          </DialogHeader>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">اكتب اسم اللوحة بالضبط للتأكيد:</p>
           <Input
