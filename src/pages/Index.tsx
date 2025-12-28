@@ -826,7 +826,7 @@ const Index = () => {
       <ReorderDialog open={reorderOpen} onOpenChange={setReorderOpen} boards={boards} onReorder={setBoards} />
 
       <Dialog open={addBoardOpen} onOpenChange={setAddBoardOpen}>
-        <DialogContent className="bg-popover">
+        <DialogContent className="bg-popover top-[10%] translate-y-0">
           <DialogHeader>
             <DialogTitle>إضافة لوحة جديدة</DialogTitle>
           </DialogHeader>
