@@ -828,7 +828,7 @@ const Index = () => {
       <Dialog open={addBoardOpen} onOpenChange={setAddBoardOpen}>
         <DialogContent className="bg-popover top-[10%] translate-y-0">
           <DialogHeader>
-            <DialogTitle className="text-center">إضافة لوحة جديدة</DialogTitle>
+            <DialogTitle>إضافة لوحة جديدة</DialogTitle>
           </DialogHeader>
           <Input
             value={newBoardName}
@@ -845,7 +845,7 @@ const Index = () => {
       <Dialog open={editBoardOpen} onOpenChange={setEditBoardOpen}>
         <DialogContent className="bg-popover top-[10%] translate-y-0">
           <DialogHeader>
-            <DialogTitle>تعديل اسم اللوحة: {activeBoard}</DialogTitle>
+            <DialogTitle className="text-center">تعديل اسم اللوحة: {activeBoard}</DialogTitle>
           </DialogHeader>
           <Input
             value={newBoardName}
