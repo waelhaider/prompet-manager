@@ -843,7 +843,7 @@ const Index = () => {
       </Dialog>
 
       <Dialog open={editBoardOpen} onOpenChange={setEditBoardOpen}>
-        <DialogContent className="bg-popover">
+        <DialogContent className="bg-popover top-[10%] translate-y-0">
           <DialogHeader>
             <DialogTitle>تعديل اسم اللوحة: {activeBoard}</DialogTitle>
           </DialogHeader>
