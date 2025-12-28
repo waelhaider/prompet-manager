@@ -864,7 +864,6 @@ const Index = () => {
           <DialogHeader>
             <DialogTitle className="text-center">حذف اللوحة: {activeBoard}</DialogTitle>
           </DialogHeader>
-          </DialogHeader>
           <p className="text-sm text-muted-foreground">اكتب اسم اللوحة بالضبط للتأكيد:</p>
           <Input
             value={boardToDelete}
