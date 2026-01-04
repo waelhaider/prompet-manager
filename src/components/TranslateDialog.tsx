@@ -46,19 +46,28 @@ export const TranslateDialog = ({
   fontSize = 14,
 }: TranslateDialogProps) => {
   const [sourceLang, setSourceLang] = useState("auto");
-  const [targetLang, setTargetLang] = useState("en");
+  const [targetLang, setTargetLang] = useState("ar");
   const [sourceText, setSourceText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [detectedLang, setDetectedLang] = useState<string | null>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Detect if text is Arabic to set appropriate target language
+  const isArabicText = (text: string) => {
+    const arabicPattern = /[\u0600-\u06FF]/;
+    return arabicPattern.test(text);
+  };
+
   useEffect(() => {
     if (open && originalText) {
       setSourceText(originalText);
       setSourceLang("auto");
       setDetectedLang(null);
-      translateText(originalText, "auto");
+      // Set target language based on original text language
+      const initialTargetLang = isArabicText(originalText) ? "en" : "ar";
+      setTargetLang(initialTargetLang);
+      translateText(originalText, "auto", initialTargetLang);
     }
   }, [open, originalText]);
 
@@ -81,15 +90,16 @@ export const TranslateDialog = ({
     };
   }, [sourceText, sourceLang, targetLang, open]);
 
-  const translateText = async (textToTranslate: string, fromLang: string) => {
+  const translateText = async (textToTranslate: string, fromLang: string, toLang?: string) => {
     if (!textToTranslate) {
       setTranslatedText("");
       return;
     }
     setIsLoading(true);
+    const targetLanguage = toLang || targetLang;
     try {
       const response = await fetch(
-        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${fromLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(textToTranslate)}`,
+        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${fromLang}&tl=${targetLanguage}&dt=t&q=${encodeURIComponent(textToTranslate)}`,
       );
 
       if (!response.ok) {
