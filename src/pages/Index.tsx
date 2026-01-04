@@ -621,17 +621,24 @@ const Index = () => {
       });
       return;
     }
+    
+    // Close dialog first
+    setDeleteBoardOpen(false);
+    
     const boardNotes = notes.filter((n) => n.board === activeBoard);
     const newDeletedBoards = [...deletedBoards, { board: activeBoard, notes: boardNotes }];
+    
+    // Update state
+    const newBoards = boards.filter((b) => b !== activeBoard);
+    const newNotes = notes.filter((n) => n.board !== activeBoard);
+    const newActiveBoard = boards[0] === activeBoard ? boards[1] : boards[0];
+    
     setDeletedBoards(newDeletedBoards);
-    // Save immediately to localStorage to ensure persistence
-    localStorage.setItem("deletedBoards", JSON.stringify(newDeletedBoards));
-
-    setBoards(boards.filter((b) => b !== activeBoard));
-    setNotes(notes.filter((n) => n.board !== activeBoard));
-    setActiveBoard(boards[0] === activeBoard ? boards[1] : boards[0]);
+    setBoards(newBoards);
+    setNotes(newNotes);
+    setActiveBoard(newActiveBoard);
     setBoardToDelete("");
-    setDeleteBoardOpen(false);
+    
     toast({
       title: "تم الحذف",
       description: "تم نقل اللوحة إلى المحذوفات",
