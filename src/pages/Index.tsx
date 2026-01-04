@@ -650,24 +650,29 @@ const Index = () => {
     const deletedItem = deletedBoards.find((d) => d.board === boardToRestore);
     if (!deletedItem) return;
 
-    if (!targetBoard) {
-      toast({
-        title: "خطأ",
-        description: "الرجاء اختيار اللوحة الهدف",
-        variant: "destructive",
-      });
-      return;
+    // Restore the board with its original name
+    let restoredBoardName = deletedItem.board;
+    // If board name already exists, add a suffix
+    if (boards.includes(restoredBoardName)) {
+      let counter = 1;
+      while (boards.includes(`${deletedItem.board} (${counter})`)) {
+        counter++;
+      }
+      restoredBoardName = `${deletedItem.board} (${counter})`;
     }
 
-    const restoredNotes = deletedItem.notes.map((n) => ({ ...n, board: targetBoard }));
+    // Add the board back
+    setBoards([...boards, restoredBoardName]);
+    
+    // Restore notes with the board name
+    const restoredNotes = deletedItem.notes.map((n) => ({ ...n, board: restoredBoardName }));
     setNotes([...notes, ...restoredNotes]);
     setDeletedBoards(deletedBoards.filter((d) => d.board !== boardToRestore));
     setBoardToRestore("");
-    setTargetBoard("");
     setRestoreOpen(false);
     toast({
       title: "تمت الاستعادة",
-      description: `تم استعادة ملاحظات ${deletedItem.board} إلى ${targetBoard}`,
+      description: `تم استعادة اللوحة "${restoredBoardName}" بنجاح`,
     });
   };
   // Detect text direction based on majority of characters
