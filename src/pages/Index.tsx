@@ -993,19 +993,7 @@ const Index = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                <Select value={targetBoard} onValueChange={setTargetBoard}>
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="استعادة إلى اللوحة" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover">
-                    {boards.map((board) => (
-                      <SelectItem key={board} value={board}>
-                        {board}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <DialogFooter className="flex gap-2 sm:gap-0">
+                <div className="flex gap-2 justify-end">
                   <Button
                     onClick={() => setConfirmDeleteBoardName(boardToRestore)}
                     size="sm"
@@ -1015,10 +1003,10 @@ const Index = () => {
                     <Trash2 className="h-3 w-3 ml-1" />
                     حذف نهائي
                   </Button>
-                  <Button onClick={restoreBoard} size="sm">
+                  <Button onClick={restoreBoard} size="sm" disabled={!boardToRestore}>
                     استعادة اللوحة
                   </Button>
-                </DialogFooter>
+                </div>
               </>
             )}
           </div>
