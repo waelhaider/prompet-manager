@@ -711,6 +711,10 @@ const Index = () => {
         activeBoard={activeBoard}
         onBoardChange={setActiveBoard}
         onMenuOpen={() => setMenuOpen(true)}
+        noteCounts={boards.reduce((acc, board) => {
+          acc[board] = notes.filter(n => n.board === board).length;
+          return acc;
+        }, {} as Record<string, number>)}
       />
 
       <div className="container max-w-4xl mx-auto px-1 py-2 space-y-2">
