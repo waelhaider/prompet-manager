@@ -842,7 +842,7 @@ const Index = () => {
       <ReorderDialog open={reorderOpen} onOpenChange={setReorderOpen} boards={boards} onReorder={setBoards} />
 
       <Dialog open={addBoardOpen} onOpenChange={setAddBoardOpen}>
-        <DialogContent className="bg-popover top-[10%] translate-y-0">
+        <DialogContent className="bg-popover top-[10%] translate-y-0" closePosition="side">
           <DialogHeader>
             <DialogTitle className="text-center">إضافة لوحة جديدة</DialogTitle>
           </DialogHeader>
@@ -859,7 +859,7 @@ const Index = () => {
       </Dialog>
 
       <Dialog open={editBoardOpen} onOpenChange={setEditBoardOpen}>
-        <DialogContent className="bg-popover top-[10%] translate-y-0">
+        <DialogContent className="bg-popover top-[10%] translate-y-0" closePosition="side">
           <DialogHeader>
             <DialogTitle className="text-center">تعديل اسم اللوحة: {activeBoard}</DialogTitle>
           </DialogHeader>
@@ -876,7 +876,7 @@ const Index = () => {
       </Dialog>
 
       <Dialog open={deleteBoardOpen} onOpenChange={setDeleteBoardOpen}>
-        <DialogContent className="bg-popover top-[10%] translate-y-0">
+        <DialogContent className="bg-popover top-[10%] translate-y-0" closePosition="side">
           <DialogHeader>
             <DialogTitle className="text-center">حذف اللوحة: {activeBoard}</DialogTitle>
           </DialogHeader>
@@ -1103,7 +1103,7 @@ const Index = () => {
       </AlertDialog>
 
       <Dialog open={!!viewingImage} onOpenChange={(open) => !open && setViewingImage(null)}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-1 overflow-hidden flex items-center justify-center">
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-1 overflow-hidden flex items-center justify-center" closePosition="side">
           {viewingImage && (
             <TransformWrapper
               initialScale={1}
