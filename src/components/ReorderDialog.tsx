@@ -39,7 +39,7 @@ export const ReorderDialog = ({ open, onOpenChange, boards, onReorder }: Reorder
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-popover top-[10%] translate-y-0">
+      <DialogContent className="bg-popover top-[10%] translate-y-0" closePosition="side">
         <DialogHeader>
           <DialogTitle>ترتيب اللوحات</DialogTitle>
         </DialogHeader>
