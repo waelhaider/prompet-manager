@@ -62,6 +62,8 @@ const Index = () => {
   const [highlightedNoteId, setHighlightedNoteId] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [confirmClearAll, setConfirmClearAll] = useState(false);
+  const [reorderNoteId, setReorderNoteId] = useState<string | null>(null);
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const notesContainerRef = useRef<HTMLDivElement>(null);
@@ -172,6 +174,79 @@ const Index = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Long press handlers for note reordering
+  const handleTouchStart = (noteId: string) => {
+    longPressTimerRef.current = setTimeout(() => {
+      setReorderNoteId(noteId);
+      toast({
+        title: "وضع إعادة الترتيب",
+        description: "اضغط على الأسهم لتحريك الملاحظة",
+        duration: 2000,
+      });
+    }, 500); // 500ms long press
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const exitReorderMode = () => {
+    setReorderNoteId(null);
+  };
+
+  const moveNoteUp = (noteId: string) => {
+    const boardNotes = notes
+      .filter(n => n.board === activeBoard)
+      .sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
+    
+    const noteIndex = boardNotes.findIndex(n => n.id === noteId);
+    if (noteIndex <= 0) return;
+
+    const currentNote = boardNotes[noteIndex];
+    const targetNote = boardNotes[noteIndex - 1];
+
+    // Swap orders
+    const newNotes = notes.map(n => {
+      if (n.id === currentNote.id) {
+        return { ...n, order: targetNote.order ?? 0 };
+      }
+      if (n.id === targetNote.id) {
+        return { ...n, order: currentNote.order ?? 0 };
+      }
+      return n;
+    });
+
+    setNotes(newNotes);
+  };
+
+  const moveNoteDown = (noteId: string) => {
+    const boardNotes = notes
+      .filter(n => n.board === activeBoard)
+      .sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
+    
+    const noteIndex = boardNotes.findIndex(n => n.id === noteId);
+    if (noteIndex < 0 || noteIndex >= boardNotes.length - 1) return;
+
+    const currentNote = boardNotes[noteIndex];
+    const targetNote = boardNotes[noteIndex + 1];
+
+    // Swap orders
+    const newNotes = notes.map(n => {
+      if (n.id === currentNote.id) {
+        return { ...n, order: targetNote.order ?? 0 };
+      }
+      if (n.id === targetNote.id) {
+        return { ...n, order: currentNote.order ?? 0 };
+      }
+      return n;
+    });
+
+    setNotes(newNotes);
+  };
+
   const increaseFontSize = () => {
     setFontSize(Math.min(fontSize + 1, 24));
   };
@@ -253,12 +328,17 @@ const Index = () => {
         duration: 1000,
       });
     } else {
+      // Get max order for this board and add 1
+      const boardNotes = notes.filter(n => n.board === activeBoard);
+      const maxOrder = Math.max(0, ...boardNotes.map(n => n.order ?? 0));
+      
       const newNote: Note = {
         id: Date.now().toString(),
         content: noteContent,
         board: activeBoard,
         images: pendingImages.length > 0 ? pendingImages : undefined,
         createdAt: new Date().toISOString(),
+        order: maxOrder + 1,
       };
       setNotes([newNote, ...notes]);
       toast({
@@ -690,7 +770,9 @@ const Index = () => {
     const latinCount = (text.match(latinPattern) || []).length;
     return arabicCount >= latinCount ? "rtl" : "ltr";
   };
-  const filteredNotes = notes.filter((n) => n.board === activeBoard).sort((a, b) => parseInt(b.id) - parseInt(a.id)); // Sort from newest to oldest
+  const filteredNotes = notes
+    .filter((n) => n.board === activeBoard)
+    .sort((a, b) => (b.order ?? 0) - (a.order ?? 0)); // Sort by order (highest = newest at top)
 
   // Show loading state while data is being loaded from IndexedDB
   if (isLoading) {
@@ -802,12 +884,21 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-1.5" onClick={() => reorderNoteId && exitReorderMode()}>
           {filteredNotes.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">لا توجد ملاحظات في هذه اللوحة</div>
           ) : (
-            filteredNotes.map((note) => (
-              <div key={note.id} id={`note-${note.id}`}>
+            filteredNotes.map((note, index) => (
+              <div 
+                key={note.id} 
+                id={`note-${note.id}`}
+                onTouchStart={() => handleTouchStart(note.id)}
+                onTouchEnd={handleTouchEnd}
+                onTouchCancel={handleTouchEnd}
+                onMouseDown={() => handleTouchStart(note.id)}
+                onMouseUp={handleTouchEnd}
+                onMouseLeave={handleTouchEnd}
+              >
                 <NoteCard
                   note={note}
                   boards={boards}
@@ -820,6 +911,11 @@ const Index = () => {
                   onTranslate={() => translateNote(note)}
                   fontSize={fontSize}
                   onImageClick={setViewingImage}
+                  isReorderMode={reorderNoteId === note.id}
+                  onMoveUp={() => moveNoteUp(note.id)}
+                  onMoveDown={() => moveNoteDown(note.id)}
+                  canMoveUp={index > 0}
+                  canMoveDown={index < filteredNotes.length - 1}
                 />
               </div>
             ))

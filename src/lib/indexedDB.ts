@@ -7,6 +7,7 @@ export interface Note {
   board: string;
   images?: string[];
   createdAt?: string;
+  order?: number;
 }
 
 export interface DeletedBoard {
