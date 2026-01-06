@@ -200,7 +200,7 @@ const Index = () => {
   const moveNoteUp = (noteId: string) => {
     const boardNotes = notes
       .filter(n => n.board === activeBoard)
-      .sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
+      .sort((a, b) => (b.order ?? parseInt(b.id)) - (a.order ?? parseInt(a.id)));
     
     const noteIndex = boardNotes.findIndex(n => n.id === noteId);
     if (noteIndex <= 0) return;
@@ -208,13 +208,16 @@ const Index = () => {
     const currentNote = boardNotes[noteIndex];
     const targetNote = boardNotes[noteIndex - 1];
 
+    const currentOrder = currentNote.order ?? parseInt(currentNote.id);
+    const targetOrder = targetNote.order ?? parseInt(targetNote.id);
+
     // Swap orders
     const newNotes = notes.map(n => {
       if (n.id === currentNote.id) {
-        return { ...n, order: targetNote.order ?? 0 };
+        return { ...n, order: targetOrder };
       }
       if (n.id === targetNote.id) {
-        return { ...n, order: currentNote.order ?? 0 };
+        return { ...n, order: currentOrder };
       }
       return n;
     });
@@ -225,7 +228,7 @@ const Index = () => {
   const moveNoteDown = (noteId: string) => {
     const boardNotes = notes
       .filter(n => n.board === activeBoard)
-      .sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
+      .sort((a, b) => (b.order ?? parseInt(b.id)) - (a.order ?? parseInt(a.id)));
     
     const noteIndex = boardNotes.findIndex(n => n.id === noteId);
     if (noteIndex < 0 || noteIndex >= boardNotes.length - 1) return;
@@ -233,13 +236,16 @@ const Index = () => {
     const currentNote = boardNotes[noteIndex];
     const targetNote = boardNotes[noteIndex + 1];
 
+    const currentOrder = currentNote.order ?? parseInt(currentNote.id);
+    const targetOrder = targetNote.order ?? parseInt(targetNote.id);
+
     // Swap orders
     const newNotes = notes.map(n => {
       if (n.id === currentNote.id) {
-        return { ...n, order: targetNote.order ?? 0 };
+        return { ...n, order: targetOrder };
       }
       if (n.id === targetNote.id) {
-        return { ...n, order: currentNote.order ?? 0 };
+        return { ...n, order: currentOrder };
       }
       return n;
     });
@@ -772,7 +778,7 @@ const Index = () => {
   };
   const filteredNotes = notes
     .filter((n) => n.board === activeBoard)
-    .sort((a, b) => (b.order ?? 0) - (a.order ?? 0)); // Sort by order (highest = newest at top)
+    .sort((a, b) => (b.order ?? parseInt(b.id)) - (a.order ?? parseInt(a.id))); // Sort by order (highest = newest at top)
 
   // Show loading state while data is being loaded from IndexedDB
   if (isLoading) {
