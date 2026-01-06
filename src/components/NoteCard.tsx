@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Copy, Edit2, Trash2, ArrowRight, Languages, ChevronLeft } from "lucide-react";
+import { MoreVertical, Copy, Edit2, Trash2, ArrowRight, Languages, ChevronLeft, ChevronUp, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -28,6 +28,7 @@ interface NoteCardProps {
     board: string;
     images?: string[];
     createdAt?: string;
+    order?: number;
   };
   boards: string[];
   isSelected: boolean;
@@ -39,6 +40,11 @@ interface NoteCardProps {
   onTranslate: () => void;
   fontSize?: number;
   onImageClick?: (image: string) => void;
+  isReorderMode?: boolean;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
 }
 
 export const NoteCard = ({
@@ -53,6 +59,11 @@ export const NoteCard = ({
   onTranslate,
   fontSize = 14,
   onImageClick,
+  isReorderMode = false,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp = true,
+  canMoveDown = true,
 }: NoteCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -108,11 +119,14 @@ export const NoteCard = ({
         "relative p-2 pb-7 cursor-pointer transition-all duration-200",
         "shadow-sm hover:shadow-lg hover:bg-note-hover",
         isSelected && "bg-note-selected ring-2 ring-primary shadow-md",
-        isActivated && "ring-2 ring-primary/60 bg-primary/5 shadow-md"
+        isActivated && "ring-2 ring-primary/60 bg-primary/5 shadow-md",
+        isReorderMode && "ring-2 ring-orange-500 bg-orange-50 dark:bg-orange-950/30"
       )}
       onClick={() => {
-        onSelect();
-        setIsExpanded(!isExpanded);
+        if (!isReorderMode) {
+          onSelect();
+          setIsExpanded(!isExpanded);
+        }
       }}
     >
       <div className="flex gap-2 items-start">
@@ -162,12 +176,43 @@ export const NoteCard = ({
 
       {/* Bottom row: timestamp and menu */}
       <div className="absolute left-1.5 right-1.5 flex items-center justify-between" style={{ bottom: '1px' }}>
-        {note.createdAt && (
+        {note.createdAt && !isReorderMode && (
           <span className="text-[10px] text-muted-foreground">
             {new Date(note.createdAt).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })} 🕒 {new Date(note.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
           </span>
         )}
-        {!note.createdAt && <span />}
+        {isReorderMode && (
+          <div className="flex gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 px-2 gap-1"
+              disabled={!canMoveUp}
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveUp?.();
+              }}
+            >
+              <ChevronUp className="h-4 w-4" />
+              أعلى
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 px-2 gap-1"
+              disabled={!canMoveDown}
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveDown?.();
+              }}
+            >
+              <ChevronDown className="h-4 w-4" />
+              أسفل
+            </Button>
+          </div>
+        )}
+        {!note.createdAt && !isReorderMode && <span />}
+        {!isReorderMode && (
         <DropdownMenu open={menuOpen} onOpenChange={handleMenuOpenChange}>
           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
             <Button
@@ -259,6 +304,7 @@ export const NoteCard = ({
           )}
         </DropdownMenuContent>
         </DropdownMenu>
+        )}
       </div>
 
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
