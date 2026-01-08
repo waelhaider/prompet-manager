@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronUp, ChevronDown } from "lucide-react";
 
 interface ReorderDialogProps {
@@ -43,36 +44,38 @@ export const ReorderDialog = ({ open, onOpenChange, boards, onReorder }: Reorder
         <DialogHeader>
           <DialogTitle>ترتيب اللوحات</DialogTitle>
         </DialogHeader>
-        <div className="space-y-2 py-4">
-          {tempBoards.map((board, index) => (
-            <div
-              key={board}
-              className="flex items-center justify-between p-3 bg-background border border-border rounded-lg"
-            >
-              <span className="font-medium">{board}</span>
-              <div className="flex gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => moveUp(index)}
-                  disabled={index === 0}
-                  className="h-8 w-8"
-                >
-                  <ChevronUp className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => moveDown(index)}
-                  disabled={index === tempBoards.length - 1}
-                  className="h-8 w-8"
-                >
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
+        <ScrollArea className="max-h-[50vh] py-4">
+          <div className="space-y-2 pr-4">
+            {tempBoards.map((board, index) => (
+              <div
+                key={board}
+                className="flex items-center justify-between p-3 bg-background border border-border rounded-lg"
+              >
+                <span className="font-medium">{board}</span>
+                <div className="flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => moveUp(index)}
+                    disabled={index === 0}
+                    className="h-8 w-8"
+                  >
+                    <ChevronUp className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => moveDown(index)}
+                    disabled={index === tempBoards.length - 1}
+                    className="h-8 w-8"
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollArea>
         <DialogFooter>
           <Button variant="outline" onClick={handleCancel}>
             إلغاء
