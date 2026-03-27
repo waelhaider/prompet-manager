@@ -70,7 +70,7 @@ export const NoteCard = ({
   const [showMoveOptions, setShowMoveOptions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isActivated, setIsActivated] = useState(false);
-  const activationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const activationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activateCard = () => {
     if (activationTimeoutRef.current) {
