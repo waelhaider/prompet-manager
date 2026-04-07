@@ -12,6 +12,7 @@ interface TranslateDialogProps {
   onOpenChange: (open: boolean) => void;
   originalText: string;
   onSaveTranslation?: (newText: string) => void;
+  onSaveOriginal?: (newText: string) => void;
   fontSize?: number;
 }
 
@@ -43,6 +44,7 @@ export const TranslateDialog = ({
   onOpenChange,
   originalText,
   onSaveTranslation,
+  onSaveOriginal,
   fontSize = 14,
 }: TranslateDialogProps) => {
   const [sourceLang, setSourceLang] = useState("auto");
@@ -150,6 +152,14 @@ export const TranslateDialog = ({
     if (onSaveTranslation && translatedText) {
       onSaveTranslation(translatedText);
       toast.success("تم حفظ الترجمة في الملاحظة");
+      onOpenChange(false);
+    }
+  };
+
+  const handleSaveOriginal = () => {
+    if (onSaveOriginal && sourceText) {
+      onSaveOriginal(sourceText);
+      toast.success("تم حفظ النص الأصلي في الملاحظة");
       onOpenChange(false);
     }
   };
@@ -268,6 +278,17 @@ export const TranslateDialog = ({
 
           {/* Action Buttons Row - Wrap on small screens */}
           <div className="flex gap-1 justify-center flex-nowrap relative -top-2">
+            {onSaveOriginal && (
+              <Button
+                size="sm"
+                className="h-7 text-[10px] sm:text-xs px-1.5 sm:px-2 min-w-0 bg-green-600 hover:bg-green-700 text-white"
+                onClick={handleSaveOriginal}
+                disabled={!sourceText}
+              >
+                <Save className="h-3 w-3 ml-0.5 flex-shrink-0" />
+                <span className="truncate">حفظ الأصلي</span>
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
@@ -277,7 +298,16 @@ export const TranslateDialog = ({
               <Copy className="h-3 w-3 ml-0.5 flex-shrink-0" />
               <span className="truncate">نسخ الأصلي</span>
             </Button>
-
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 text-[10px] sm:text-xs px-1.5 sm:px-2 min-w-0"
+              onClick={() => copyToClipboard(translatedText, "الترجمة")}
+              disabled={!translatedText}
+            >
+              <Copy className="h-3 w-3 ml-0.5 flex-shrink-0" />
+              <span className="truncate">نسخ الترجمة</span>
+            </Button>
             {onSaveTranslation && (
               <Button
                 size="sm"
@@ -289,16 +319,6 @@ export const TranslateDialog = ({
                 <span className="truncate">حفظ الترجمة</span>
               </Button>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 text-[10px] sm:text-xs px-1.5 sm:px-0 min-w-0"
-              onClick={() => copyToClipboard(translatedText, "الترجمة")}
-              disabled={!translatedText}
-            >
-              <Copy className="h-3 w-3 ml-0.5 flex-shrink-0" />
-              <span className="truncate">نسخ الترجمة</span>
-            </Button>
           </div>
         </div>
       </DialogContent>

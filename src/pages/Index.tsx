@@ -1006,6 +1006,11 @@ const Index = () => {
             setNotes(notes.map((n) => (n.id === noteToTranslate.id ? { ...n, content: newText } : n)));
           }
         }}
+        onSaveOriginal={(newText) => {
+          if (noteToTranslate) {
+            setNotes(notes.map((n) => (n.id === noteToTranslate.id ? { ...n, content: newText } : n)));
+          }
+        }}
         fontSize={fontSize}
       />
 
