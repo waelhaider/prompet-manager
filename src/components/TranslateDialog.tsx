@@ -44,6 +44,7 @@ export const TranslateDialog = ({
   onOpenChange,
   originalText,
   onSaveTranslation,
+  onSaveOriginal,
   fontSize = 14,
 }: TranslateDialogProps) => {
   const [sourceLang, setSourceLang] = useState("auto");
