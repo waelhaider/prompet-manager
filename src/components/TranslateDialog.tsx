@@ -12,6 +12,7 @@ interface TranslateDialogProps {
   onOpenChange: (open: boolean) => void;
   originalText: string;
   onSaveTranslation?: (newText: string) => void;
+  onSaveOriginal?: (newText: string) => void;
   fontSize?: number;
 }
 
