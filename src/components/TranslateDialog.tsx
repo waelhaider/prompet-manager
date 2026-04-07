@@ -51,7 +51,7 @@ export const TranslateDialog = ({
   const [translatedText, setTranslatedText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [detectedLang, setDetectedLang] = useState<string | null>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Detect if text is Arabic to set appropriate target language
   const isArabicText = (text: string) => {

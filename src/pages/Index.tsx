@@ -63,7 +63,7 @@ const Index = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [confirmClearAll, setConfirmClearAll] = useState(false);
   const [reorderNoteId, setReorderNoteId] = useState<string | null>(null);
-  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const notesContainerRef = useRef<HTMLDivElement>(null);
