@@ -156,6 +156,14 @@ export const TranslateDialog = ({
     }
   };
 
+  const handleSaveOriginal = () => {
+    if (onSaveOriginal && sourceText) {
+      onSaveOriginal(sourceText);
+      toast.success("تم حفظ النص الأصلي في الملاحظة");
+      onOpenChange(false);
+    }
+  };
+
   const isRTL = (langCode: string) => RTL_LANGUAGES.includes(langCode);
 
   return (
